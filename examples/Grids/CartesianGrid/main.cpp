@@ -1,10 +1,10 @@
 /****************************************************************************
 **
-** This file is part of the KD Chart library.
+** 此文件是KD Chart库的示例文件。
 **
-** SPDX-FileCopyrightText: 2001 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
+** 版权所有 (C) 2001 Klarälvdalens Datakonsult AB，KDAB集团公司 <info@kdab.com>
 **
-** SPDX-License-Identifier: MIT
+** 许可证: MIT
 **
 ****************************************************************************/
 
@@ -24,13 +24,26 @@
 
 using namespace KDChart;
 
+/**
+ * @brief 自定义图表窗口部件类
+ * 
+ * 该类继承自QWidget，用于展示一个带有自定义网格配置的折线图。
+ * 包含图表的初始化、数据模型设置、坐标轴配置、网格属性设置等功能。
+ */
 class ChartWidget : public QWidget
 {
     Q_OBJECT
 public:
+    /**
+     * @brief 构造函数
+     * @param parent 父窗口部件
+     * 
+     * 初始化图表窗口，设置数据模型，创建折线图，配置坐标轴、标题和网格属性。
+     */
     explicit ChartWidget(QWidget *parent = nullptr)
         : QWidget(parent)
     {
+        // 初始化数据模型，插入6行4列数据
         m_model.insertRows(0, 6, QModelIndex());
         m_model.insertColumns(0, 4, QModelIndex());
         for (int row = 0; row < 6; ++row) {
@@ -40,100 +53,96 @@ public:
             }
         }
 
+        // 创建折线图并设置数据模型
         auto *diagram = new LineDiagram;
         diagram->setModel(&m_model);
 
+        // 创建并配置坐标轴
         auto *xAxis = new CartesianAxis(diagram);
         auto *yAxis = new CartesianAxis(diagram);
-        xAxis->setPosition(KDChart::CartesianAxis::Bottom);
-        yAxis->setPosition(KDChart::CartesianAxis::Left);
+        xAxis->setPosition(KDChart::CartesianAxis::Bottom); // X轴位于底部
+        yAxis->setPosition(KDChart::CartesianAxis::Left);   // Y轴位于左侧
         diagram->addAxis(xAxis);
         diagram->addAxis(yAxis);
 
+        // 将图表添加到坐标平面
         m_chart.coordinatePlane()->replaceDiagram(diagram);
 
-        /* Header */
+        /* 配置标题 */
 
-        // Add at one Header and set it up
+        // 添加标题并设置位置和文本
         auto *header = new HeaderFooter(&m_chart);
-        header->setPosition(Position::North);
-        header->setText("A Line Chart with Grid Configured");
+        header->setPosition(Position::North); // 标题位于顶部
+        header->setText("配置了网格的折线图");
         m_chart.addHeaderFooter(header);
 
-        // Configure the Header text attributes
+        // 配置标题文本属性
         TextAttributes hta;
-        hta.setPen(QPen(Qt::red));
+        hta.setPen(QPen(Qt::red)); // 文本颜色为红色
 
-        // let the header resize itself
-        // together with the widget.
-        // so-called relative size
+        // 设置相对字体大小
         Measure m(35.0);
         m.setRelativeMode(header->autoReferenceArea(),
                           KDChartEnums::MeasureOrientationMinimum);
         hta.setFontSize(m);
-        // min font size
+        // 设置最小字体大小
         m.setValue(3.0);
         m.setCalculationMode(KDChartEnums::MeasureCalculationModeAbsolute);
         hta.setMinimalFontSize(m);
         header->setTextAttributes(hta);
 
-        // Configure the Header's Background
+        // 配置标题背景
         BackgroundAttributes hba;
-        hba.setBrush(Qt::white);
-        hba.setVisible(true);
+        hba.setBrush(Qt::white); // 背景为白色
+        hba.setVisible(true);    // 显示背景
         header->setBackgroundAttributes(hba);
 
-        // Configure the header Frame attributes
+        // 配置标题边框
         FrameAttributes hfa;
-        hfa.setPen(QPen(QBrush(Qt::darkGray), 2));
-        hfa.setPadding(2);
-        hfa.setVisible(true);
+        hfa.setPen(QPen(QBrush(Qt::darkGray), 2)); // 边框为深灰色，宽度2
+        hfa.setPadding(2);                         // 内边距2
+        hfa.setVisible(true);                      // 显示边框
         header->setFrameAttributes(hfa);
 
-        // diagram->coordinatePlane returns an abstract plane one.
-        // if we want to specify the orientation we need to cast
-        // as follow
+        // 将抽象坐标平面转换为笛卡尔坐标平面
         auto *plane = static_cast<CartesianCoordinatePlane *>(diagram->coordinatePlane());
 
-        /* Configure grid steps and pen */
+        /* 配置网格步长和画笔 */
 
-        // Vertical
+        // 垂直网格
         GridAttributes gv(plane->gridAttributes(Qt::Vertical));
 
-        // Configure a grid pen
-        // I know it is horrible
-        // just for demo'ing
+        // 配置主网格画笔
         QPen gridPen(Qt::gray);
         gridPen.setWidth(2);
         gv.setGridPen(gridPen);
 
-        // Configure a sub-grid pen
+        // 配置子网格画笔
         QPen subGridPen(Qt::darkGray);
-        subGridPen.setStyle(Qt::DotLine);
+        subGridPen.setStyle(Qt::DotLine); // 虚线样式
         gv.setSubGridPen(subGridPen);
 
-        // Display a blue zero line
+        // 显示蓝色零线
         gv.setZeroLinePen(QPen(Qt::blue));
 
-        // change step and substep width
-        // or any of those.
+        // 设置网格步长和子步长宽度
         gv.setGridStepWidth(1.0);
         gv.setGridSubStepWidth(0.5);
-        gv.setGridVisible(true);
-        gv.setSubGridVisible(true);
+        gv.setGridVisible(true);   // 显示主网格
+        gv.setSubGridVisible(true); // 显示子网格
 
-        // Horizontal
-
+        // 水平网格
         GridAttributes gh = plane->gridAttributes(Qt::Horizontal);
         gh.setGridPen(gridPen);
         gh.setGridStepWidth(0.5);
         gh.setSubGridPen(subGridPen);
         gh.setGridSubStepWidth(0.1);
 
+        // 应用网格属性
         plane->setGridAttributes(Qt::Vertical, gv);
         plane->setGridAttributes(Qt::Horizontal, gh);
 
-        // Data Values Display and position
+        // 数据值显示和位置
         const int colCount = diagram->model()->columnCount(diagram->rootIndex());
         for (int iColumn = 0; iColumn < colCount; ++iColumn) {
             DataValueAttributes a(diagram->dataValueAttributes(iColumn));
@@ -151,6 +160,7 @@ public:
             diagram->setDataValueAttributes(iColumn, a);
         }
 
+        // 设置布局
         auto *l = new QVBoxLayout(this);
         l->addWidget(&m_chart);
         m_chart.setGlobalLeadingRight(20);
@@ -158,11 +168,19 @@ public:
     }
 
 private:
-    Chart m_chart;
-    QStandardItemModel m_model;
-    QPixmap pixmap;
+    Chart m_chart;              // 图表对象
+    QStandardItemModel m_model; // 数据模型
+    QPixmap pixmap;             //  pixmap对象，未使用
 };
 
+/**
+ * @brief 程序入口函数
+ * @param argc 命令行参数数量
+ * @param argv 命令行参数数组
+ * @return 程序退出代码
+ * 
+ * 创建应用程序实例和图表窗口，显示窗口并运行应用程序事件循环。
+ */
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
