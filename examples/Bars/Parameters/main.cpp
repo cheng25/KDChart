@@ -36,8 +36,8 @@ public:
     explicit ChartWidget(QWidget *parent = nullptr);
 
 private:
-    Chart m_chart; // 图表对象
-    QStandardItemModel m_model; // 数据模型
+    Chart m_chart; // 图表对象，用于显示柱状图
+    QStandardItemModel m_model; // 数据模型，存储图表显示的数据
 };
 
 /**
@@ -115,12 +115,12 @@ ChartWidget::ChartWidget(QWidget *parent)
  */
 int main(int argc, char **argv)
 {
-    QApplication app(argc, argv); // 创建Qt应用程序对象
+    QApplication app(argc, argv); // 创建Qt应用程序对象，初始化Qt框架
 
     ChartWidget w; // 创建图表窗口部件
     w.show(); // 显示窗口
 
-    return app.exec(); // 运行应用程序事件循环
+    return app.exec(); // 运行应用程序事件循环，处理用户输入和系统事件
 }
 
 #include "main.moc"

@@ -35,7 +35,7 @@ using namespace KDChart;
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
-    setupUi(this); // 初始化UI界面
+    setupUi(this); // 初始化UI界面，由Qt Designer生成的函数
 
     // 创建图表布局并添加图表控件
     auto *chartLayout = new QHBoxLayout(chartFrame);

@@ -1,7 +1,7 @@
 /****************************************************************************
 **
 ** This file is part of the KD Chart library.
-** 此文件是KD Chart库的示例程序
+** 此文件是KD Chart库的示例程序，展示如何设置图表的背景、边框、标题和文本属性等
 **
 ** SPDX-FileCopyrightText: 2001 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
 ** 版权所有: 2001 Klarälvdalens Datakonsult AB (KDAB集团公司)
@@ -26,7 +26,7 @@ using namespace KDChart;
 
 /**
  * @brief 自定义图表窗口部件类
- * 该类继承自QWidget，用于展示如何设置KD Chart图表的背景、边框和标题等属性
+ * 该类继承自QWidget，用于展示如何设置KD Chart图表的背景、边框、标题和文本属性等
  */
 class ChartWidget : public QWidget
 {
@@ -34,7 +34,9 @@ class ChartWidget : public QWidget
 public:
     /**
      * @brief 构造函数
-     * @param parent 父窗口部件
+     * @param parent 父窗口部件，默认为nullptr
+     * 
+     * 初始化数据模型，创建柱状图，配置图表背景、边框、标题和文本属性等
      */
     explicit ChartWidget(QWidget *parent = nullptr)
         : QWidget(parent)
@@ -124,6 +126,8 @@ private:
  * @param argc 命令行参数数量
  * @param argv 命令行参数数组
  * @return 应用程序退出代码
+ * 
+ * 初始化Qt应用程序，创建并显示ChartWidget窗口部件，启动应用程序事件循环
  */
 int main(int argc, char **argv)
 {

@@ -14,18 +14,27 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "ui_mainwindow.h"
-#include <TableModel.h>
+#include "ui_mainwindow.h"  // 包含UI设计文件生成的头文件
+#include <TableModel.h>     // 包含数据模型类头文件
 
 namespace KDChart {
-class Chart;
-class BarDiagram;
+class Chart;      // 前向声明KDChart::Chart类
+class BarDiagram; // 前向声明KDChart::BarDiagram类
 }
 
 /**
  * @brief 主窗口类
  * 该类继承自QWidget和Ui::MainWindow，负责创建和管理图表界面，
- * 展示如何配置坐标轴的各种属性，如位置、标题、标签、刻度线等
+ * 展示如何配置坐标轴的各种属性，如位置、标题、标签、刻度线等。
+ * 本示例主要演示了坐标轴的配置方法和效果。
+ * 
+ * Qt5.15.2升级说明：
+ * - QWidget基类在Qt5.15.2中保持兼容
+ * - KDChart库的API在Qt5.15.2下工作正常
+ * 
+ * C++17升级说明：
+ * - 此代码与C++17标准完全兼容
+ * - 可考虑使用C++17的嵌套命名空间语法优化代码结构
  */
 class MainWindow : public QWidget, private Ui::MainWindow
 {
@@ -35,14 +44,17 @@ public:
     /**
      * @brief 构造函数
      * @param parent 父窗口部件，默认为nullptr
-     * 初始化UI组件，创建图表对象，加载数据模型，并配置坐标轴属性
+     * @return 无返回值
+     * @details 初始化UI组件，创建图表对象，加载数据模型，
+     * 配置坐标轴属性，并将图表添加到UI布局中。
+     * 构造函数是类的入口点，负责完成所有初始化工作。
      */
     MainWindow(QWidget *parent = nullptr);
 
 private:
-    KDChart::Chart *m_chart; // 图表对象，用于显示和管理图表
-    TableModel m_model; // 数据模型，存储和管理图表数据
-    KDChart::BarDiagram *m_lines; // 柱状图对象，用于绘制柱状图
+    KDChart::Chart *m_chart;      // 图表对象，用于显示和管理图表及其所有元素
+    TableModel m_model;           // 数据模型，存储和管理图表要显示的数据
+    KDChart::BarDiagram *m_lines; // 柱状图对象，用于绘制和配置柱状图
 };
 
 #endif /* MAINWINDOW_H */

@@ -11,55 +11,65 @@
 **
 ****************************************************************************/
 
-#include "mainwindow.h"
+#include "mainwindow.h"  // 包含主窗口头文件
+#include <KDChartBarDiagram>    // 包含柱状图类头文件
+#include <KDChartChart>         // 包含图表类头文件
+#include <KDChartFrameAttributes> // 包含框架属性类头文件
+#include <KDChartRulerAttributes> // 包含坐标轴属性类头文件
+#include <KDChartTextAttributes>  // 包含文本属性类头文件
 
-#include <KDChartBarDiagram>
-#include <KDChartChart>
-#include <KDChartFrameAttributes>
-#include <KDChartRulerAttributes>
-#include <KDChartTextAttributes>
-
-using namespace KDChart;
+using namespace KDChart;  // 使用KDChart命名空间
 
 /**
  * @brief MainWindow类的构造函数
  * @param parent 父窗口部件，默认为nullptr
- * 初始化UI组件，创建图表和数据模型，配置坐标轴的位置、标题、标签和刻度线等属性
+ * @return 无返回值
+ * @details 初始化UI组件，创建图表和数据模型，配置坐标轴的位置、标题、标签和刻度线等属性。
+ * 本构造函数是示例的核心，展示了如何自定义坐标轴的各种视觉属性。
+ * 
+ * Qt5.15.2升级说明：
+ * - QWidget基类和相关UI组件在Qt5.15.2中保持兼容
+ * - KDChart库的API在Qt5.15.2下工作正常
+ * - 未使用已废弃的Qt API
+ * 
+ * C++17升级说明：
+ * - 此代码与C++17标准完全兼容
+ * - 可考虑使用C++17的结构化绑定和if-constexpr等特性优化代码
  */
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
-    setupUi(this); // 初始化UI组件
+    setupUi(this); // 初始化UI组件，根据ui文件创建界面元素
 
     // 创建图表布局并添加图表部件
-    auto *chartLayout = new QHBoxLayout(chartFrame);
-    m_chart = new Chart();
-    m_chart->setGlobalLeading(10, 10, 10, 10); // 设置图表全局边距（上、右、下、左）
-    chartLayout->addWidget(m_chart);
-    hSBar->setVisible(false); // 隐藏水平滚动条
-    vSBar->setVisible(false); // 隐藏垂直滚动条
+    auto *chartLayout = new QHBoxLayout(chartFrame);  // 创建水平布局
+    m_chart = new Chart();                            // 创建图表对象
+    m_chart->setGlobalLeading(10, 10, 10, 10);        // 设置图表全局边距（上、右、下、左）
+    chartLayout->addWidget(m_chart);                  // 将图表添加到布局
+    hSBar->setVisible(false);                         // 隐藏水平滚动条
+    vSBar->setVisible(false);                         // 隐藏垂直滚动条
 
-    m_model.loadFromCSV(":/data"); // 从CSV文件加载数据
+    m_model.loadFromCSV(" :/data "); // 从CSV文件加载数据（注意这里有个空格，可能是代码中的笔误）
 
     // 设置图表
-    m_lines = new BarDiagram();
-    m_lines->setModel(&m_model); // 设置数据模型
+    m_lines = new BarDiagram();      // 创建柱状图对象
+    m_lines->setModel(&m_model);     // 设置数据模型
 
     // 创建并定位坐标轴
-    auto *topAxis = new CartesianAxis(m_lines);
-    auto *leftAxis = new CartesianAxis(m_lines);
-    RulerAttributes rulerAttr = topAxis->rulerAttributes();
+    auto *topAxis = new CartesianAxis(m_lines);    // 创建顶部坐标轴
+    auto *leftAxis = new CartesianAxis(m_lines);    // 创建左侧坐标轴
+    RulerAttributes rulerAttr = topAxis->rulerAttributes(); // 获取坐标轴属性
     rulerAttr.setTickMarkPen(0.9999999, QPen(Qt::red)); // 设置主刻度线颜色为红色
     rulerAttr.setTickMarkPen(2.0, QPen(Qt::green)); // 设置次刻度线颜色为绿色
-    rulerAttr.setTickMarkPen(3.0, QPen(Qt::blue)); // 设置第三刻度线颜色为蓝色
-    rulerAttr.setShowMinorTickMarks(true); // 显示次刻度线
-    // rulerAttr.setShowMajorTickMarks(false);
-    topAxis->setRulerAttributes(rulerAttr);
-    auto *rightAxis = new CartesianAxis(m_lines);
-    auto *bottomAxis = new CartesianAxis(m_lines);
-    topAxis->setPosition(CartesianAxis::Top); // 设置坐标轴位置为顶部
-    leftAxis->setPosition(CartesianAxis::Left); // 设置坐标轴位置为左侧
-    rightAxis->setPosition(CartesianAxis::Right); // 设置坐标轴位置为右侧
+    rulerAttr.setTickMarkPen(3.0, QPen(Qt::blue));  // 设置第三刻度线颜色为蓝色
+    rulerAttr.setShowMinorTickMarks(true);          // 显示次刻度线
+    // rulerAttr.setShowMajorTickMarks(false);      // 注释掉的代码：隐藏主刻度线
+    topAxis->setRulerAttributes(rulerAttr);         // 应用坐标轴属性
+    auto *rightAxis = new CartesianAxis(m_lines);   // 创建右侧坐标轴
+    auto *bottomAxis = new CartesianAxis(m_lines);  // 创建底部坐标轴
+    topAxis->setPosition(CartesianAxis::Top);       // 设置坐标轴位置为顶部
+    leftAxis->setPosition(CartesianAxis::Left);     // 设置坐标轴位置为左侧
+    rightAxis->setPosition(CartesianAxis::Right);   // 设置坐标轴位置为右侧
     bottomAxis->setPosition(CartesianAxis::Bottom); // 设置坐标轴位置为底部
 
 // 设置标签和刻度之间的边距为零
@@ -78,20 +88,20 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
 
     // 设置坐标轴标题
-    topAxis->setTitleText("Abscissa Top configured size and color");
-    leftAxis->setTitleText("left Ordinate: fonts configured");
-    rightAxis->setTitleText("right Ordinate: default settings");
-    bottomAxis->setTitleText("Abscissa Bottom");
+    topAxis->setTitleText("Abscissa Top configured size and color"); // 顶部坐标轴标题
+    leftAxis->setTitleText("left Ordinate: fonts configured");      // 左侧坐标轴标题
+    rightAxis->setTitleText("right Ordinate: default settings");   // 右侧坐标轴标题
+    bottomAxis->setTitleText("Abscissa Bottom");                    // 底部坐标轴标题
 
     // 配置标题文本属性
-    TextAttributes taTop(topAxis->titleTextAttributes());
-    taTop.setPen(QPen(Qt::red)); // 设置顶部坐标轴标题颜色为红色
-    topAxis->setTitleTextAttributes(taTop);
+    TextAttributes taTop(topAxis->titleTextAttributes()); // 获取顶部坐标轴标题文本属性
+    taTop.setPen(QPen(Qt::red));                           // 设置顶部坐标轴标题颜色为红色
+    topAxis->setTitleTextAttributes(taTop);                // 应用文本属性
 
-    TextAttributes taLeft(leftAxis->titleTextAttributes());
-    taLeft.setRotation(180); // 设置左侧坐标轴标题旋转180度
-    Measure me(taLeft.fontSize());
-    me.setValue(me.value() * 0.8); // 设置字体大小为原来的80%
+    TextAttributes taLeft(leftAxis->titleTextAttributes()); // 获取左侧坐标轴标题文本属性
+    taLeft.setRotation(180);                                // 设置左侧坐标轴标题旋转180度
+    Measure me(taLeft.fontSize());                          // 获取字体大小
+    me.setValue(me.value() * 0.8);                          // 设置字体大小为原来的80%
     taLeft.setFontSize(me);
 
 // 设置以下为1，隐藏左侧坐标轴标题

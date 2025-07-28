@@ -1,94 +1,73 @@
-# 参数化柱状图示例
+# 柱状图参数配置示例
 
-## 工程概述
+## 项目功能
 
-本示例展示了如何在KD Chart库中配置柱状图的各种参数，包括固定宽度、间距、数值显示和边框样式等高级特性。通过这个示例，您可以学习如何精确控制柱状图的外观和行为，以满足特定的可视化需求。
+本项目是KD Chart库的柱状图参数配置示例，展示了如何自定义柱状图的各种参数，包括：
 
-## 文件说明
+- 设置固定柱状图宽度
+- 配置柱状图之间的间距
+- 显示数据值并自定义其样式
+- 设置柱状图的边框样式
 
-- `CMakeLists.txt`: 构建配置文件，用于编译和链接示例程序
-- `main.cpp`: 主程序文件，包含ChartWidget类定义和应用程序入口
+## 文件结构
 
-## 功能说明
-
-1. **固定柱状图宽度**: 设置柱状图的固定宽度为140px
-2. **间距控制**: 配置组间距因子(0.50)和柱间距因子(0.125)
-3. **数据值显示**: 自定义数据值的字体(Comic, 9pt)、颜色(深绿色)和可见性
-4. **边框样式**: 为特定数据集设置洋红色4px点线边框
-5. **图表布局**: 设置图表顶部边距为40px
-
-## 代码结构
-
-### 类结构
-
-```cpp
-class ChartWidget : public QWidget
-{
-    Q_OBJECT
-public:
-    explicit ChartWidget(QWidget *parent = nullptr);
-
-private:
-    Chart m_chart; // 图表对象
-    QStandardItemModel m_model; // 数据模型
-};
 ```
-
-### 核心函数
-
-1. **ChartWidget构造函数**: 初始化数据模型，创建和配置柱状图，设置布局
-2. **main函数**: 创建应用程序对象和ChartWidget实例，启动事件循环
+examples/Bars/Parameters/
+├── CMakeLists.txt       # CMake构建文件
+├── README.md            # 项目说明文档
+└── main.cpp             # 主程序文件，包含ChartWidget类和main函数
+```
 
 ## 代码执行逻辑
 
-1. 程序启动，创建QApplication对象
-2. 实例化ChartWidget，触发其构造函数
-3. 在构造函数中:
-   - 初始化QStandardItemModel(2行3列)
-   - 填充模型数据(值为row*3+column)
-   - 创建BarDiagram对象并关联模型
-   - 配置BarAttributes(固定宽度、间距)
-   - 配置DataValueAttributes(字体、颜色、可见性)
-   - 设置特定数据集的边框样式
-   - 将图表添加到布局并设置窗口布局
-4. 显示ChartWidget窗口
-5. 启动应用程序事件循环
+1. **程序入口**：`main.cpp`中的`main`函数创建Qt应用程序对象和`ChartWidget`实例，并启动事件循环
 
-## 类关系图
+2. **ChartWidget初始化**：
+   - 构造函数初始化`QStandardItemModel`数据模型
+   - 填充模型数据
+   - 创建`BarDiagram`对象并关联数据模型
+   - 配置柱状图属性（固定宽度、间距等）
+   - 配置数据值显示属性（字体、颜色等）
+   - 设置柱状图边框样式
+   - 将柱状图添加到图表
+   - 设置图表布局
+
+## Qt 5.15.2和C++17兼容性说明
+
+- 本项目使用的Qt API在Qt 5.15.2中均受支持，无需特殊修改
+- 代码使用C++11特性，可以轻松迁移到C++17
+- 如需利用C++17新特性，可以考虑使用结构化绑定、if constexpr等优化代码
+
+## 执行逻辑关系
+
+### 类关系图
 
 ```mermaid
 graph TD
-    A[QWidget] --> B[ChartWidget]
-    B -->|包含| C[Chart]
-    B -->|包含| D[QStandardItemModel]
-    C -->|使用| E[BarDiagram]
-    E -->|使用| D
+    A[QApplication] --> B[ChartWidget]
+    B --> C[QWidget]
+    B --> D[KDChart::Chart]
+    B --> E[QStandardItemModel]
+    D --> F[KDChart::BarDiagram]
+    F --> E
 ```
 
-## 函数执行流程图
+### 函数执行流程图
 
 ```mermaid
 graph LR
-    A[main函数] --> B[创建QApplication]
-    A --> C[创建ChartWidget实例]
-    C --> D[ChartWidget构造函数]
-    D --> E[初始化数据模型]
-    D --> F[创建BarDiagram]
-    D --> G[配置柱状图参数]
-    D --> H[设置布局]
-    A --> I[显示窗口]
-    A --> J[启动事件循环]
+    main[main函数] --> |创建| ChartWidget[ChartWidget实例]
+    ChartWidget --> |初始化| initModel[初始化数据模型]
+    initModel --> |填充| fillData[填充模型数据]
+    ChartWidget --> |创建| BarDiagram[BarDiagram对象]
+    BarDiagram --> |关联| Model[数据模型]
+    BarDiagram --> |配置| configBar[配置柱状图属性]
+    configBar --> |设置| setWidth[设置固定宽度]
+    configBar --> |设置| setGap[设置间距]
+    configBar --> |设置| setValueAttr[设置数据值属性]
+    configBar --> |设置| setBorder[设置边框样式]
+    ChartWidget --> |添加| addToChart[添加到图表]
+    ChartWidget --> |设置| setLayout[设置布局]
+    main --> |显示| showWidget[显示窗口]
+    main --> |运行| execLoop[运行事件循环]
 ```
-
-## Qt5.15.2兼容性说明
-
-本示例代码与Qt5.15.2兼容，未使用已废弃的API。
-
-## C++17兼容性说明
-
-本示例代码使用了C++17特性，包括:
-- `auto`关键字进行类型推导
-- 空指针使用`nullptr`而非`NULL`
-- 列表初始化
-
-所有代码均符合C++17标准规范。

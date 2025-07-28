@@ -11,8 +11,8 @@
 **
 ****************************************************************************/
 
-#include "mainwindow.h"
-#include <qapplication.h>
+#include "mainwindow.h"  // 包含主窗口类的头文件
+#include <qapplication.h>  // 包含Qt应用程序类的头文件
 
 /**
  * @brief 主函数
@@ -23,10 +23,10 @@
  */
 int main(int argc, char **argv)
 {
-    QApplication app(argc, argv); // 创建Qt应用程序对象
+    QApplication app(argc, argv); // 创建Qt应用程序对象，初始化Qt框架
 
     MainWindow mainWindow; // 创建主窗口实例
     mainWindow.show(); // 显示主窗口
 
-    return app.exec(); // 运行应用程序事件循环
+    return app.exec(); // 运行应用程序事件循环，处理用户输入和系统事件
 }

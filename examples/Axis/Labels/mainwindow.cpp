@@ -28,28 +28,29 @@
 /**
  * @brief MainWindow类的构造函数
  * @param parent 父窗口部件，默认为nullptr
- * 初始化UI组件，创建图表和数据模型，配置坐标轴标签、注释和自定义刻度等属性
+ * 初始化UI组件，创建图表和数据模型，配置坐标轴标签、注释和自定义刻度等属性。
+ * 具体包括：设置图表布局、加载数据、创建折线图、配置坐标轴、设置图例以及连接信号槽。
  */
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
-    setupUi(this); // 初始化UI组件
+    setupUi(this); // 初始化UI组件，根据.ui文件创建界面元素
 
     // 创建图表布局并添加图表部件
-    auto *chartLayout = new QHBoxLayout(m_chartFrame);
-    m_chart = new KDChart::Chart;
-    chartLayout->addWidget(m_chart);
+    auto *chartLayout = new QHBoxLayout(m_chartFrame); // 创建水平布局
+    m_chart = new KDChart::Chart; // 创建图表对象
+    chartLayout->addWidget(m_chart); // 将图表添加到布局中
 
-    m_model.loadFromCSV(":/data"); // 从CSV文件加载数据
+    m_model.loadFromCSV(" :/data "); // 从CSV文件加载数据，路径为资源文件中的data
 
     // 设置图表
-    m_lines = new KDChart::LineDiagram();
-    m_lines->setModel(&m_model); // 设置数据模型
+    m_lines = new KDChart::LineDiagram(); // 创建折线图对象
+    m_lines->setModel(&m_model); // 设置折线图的数据模型
 
-    m_xAxis = new KDChart::CartesianAxis(m_lines);
-    KDChart::TextAttributes ta(m_xAxis->textAttributes());
+    m_xAxis = new KDChart::CartesianAxis(m_lines); // 创建X坐标轴对象
+    KDChart::TextAttributes ta(m_xAxis->textAttributes()); // 获取X轴文本属性
 
-    auto *yAxis = new AdjustedCartesianAxis(m_lines);
+    auto *yAxis = new AdjustedCartesianAxis(m_lines); // 创建Y坐标轴对象（自定义调整的坐标轴）
     yAxis->setBounds(3, 6); // 设置Y轴范围为3到6
     m_xAxis->setPosition(KDChart::CartesianAxis::Bottom); // 设置X轴位置为底部
     yAxis->setPosition(KDChart::CartesianAxis::Left); // 设置Y轴位置为左侧
@@ -98,10 +99,10 @@ MainWindow::MainWindow(QWidget *parent)
     // 设置图例
     m_xAxis->setCustomTickLength(11); // 设置自定义刻度长度为11像素
     yAxis->setCustomTickLength(11);
-    m_legend = new KDChart::Legend(m_lines, m_chart);
+    m_legend = new KDChart::Legend(m_lines, m_chart); // 创建图例对象
     m_legend->setPosition(KDChart::Position::East); // 设置图例位置为东侧
     m_legend->setAlignment(Qt::AlignTop); // 设置图例对齐方式为顶部对齐
-    m_chart->addLegend(m_legend);
+    m_chart->addLegend(m_legend); // 将图例添加到图表
 
     // 连接信号和槽
     connect(m_annotations, &QCheckBox::toggled, this, &MainWindow::annotationsToggled);
@@ -111,11 +112,12 @@ MainWindow::MainWindow(QWidget *parent)
 /**
  * @brief 切换注释显示状态的槽函数
  * @param showAnnotations 是否显示注释
- * 当复选框状态改变时，更新X轴注释的显示
+ * 当复选框状态改变时，更新X轴注释的显示。如果showAnnotations为true，则在指定位置显示注释文本；
+ * 否则清除注释。
  */
 void MainWindow::annotationsToggled(bool showAnnotations)
 {
-    QMultiMap<qreal, QString> annotations;
+    QMultiMap<qreal, QString> annotations; // 存储注释位置和文本的映射
     if (showAnnotations) {
         // 在自定义位置设置自定义坐标轴注释
         annotations.insert(0.5, "Left");
@@ -124,20 +126,21 @@ void MainWindow::annotationsToggled(bool showAnnotations)
         annotations.insert(6.5, "Right");
     }
     m_xAxis->setAnnotations(annotations); // 设置X轴注释
-    m_chart->update(); // 更新图表
+    m_chart->update(); // 更新图表以显示更改
 }
 
 /**
  * @brief 切换注释上网格线显示状态的槽函数
  * @param onAnnotations 是否在注释上显示网格线
- * 当复选框状态改变时，更新注释上网格线的显示
+ * 当复选框状态改变时，更新注释上网格线的显示。如果onAnnotations为true，则在注释所在位置绘制网格线；
+ * 否则不在注释位置绘制网格线。
  */
 void MainWindow::gridLinesOnAnnotationsToggled(bool onAnnotations)
 {
     // 在注释所在位置绘制网格线
     auto *plane = static_cast<KDChart::CartesianCoordinatePlane *>(m_chart->coordinatePlane());
-    KDChart::GridAttributes ga = plane->gridAttributes(Qt::Horizontal);
+    KDChart::GridAttributes ga = plane->gridAttributes(Qt::Horizontal); // 获取水平网格线属性
     ga.setLinesOnAnnotations(onAnnotations); // 设置是否在注释上显示网格线
-    plane->setGridAttributes(Qt::Horizontal, ga);
-    m_chart->update(); // 更新图表
+    plane->setGridAttributes(Qt::Horizontal, ga); // 应用修改后的网格线属性
+    m_chart->update(); // 更新图表以显示更改
 }

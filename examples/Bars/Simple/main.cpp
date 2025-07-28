@@ -113,12 +113,12 @@ private:
  */
 int main(int argc, char **argv)
 {
-    QApplication app(argc, argv);
+    QApplication app(argc, argv); // 创建Qt应用程序对象，初始化Qt框架
 
     ChartWidget w; // 创建图表窗口部件
     w.show(); // 显示窗口
 
-    return app.exec(); // 运行应用程序事件循环
+    return app.exec(); // 运行应用程序事件循环，处理用户输入和系统事件
 }
 
 #include "main.moc"

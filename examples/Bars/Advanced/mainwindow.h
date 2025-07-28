@@ -119,9 +119,9 @@ private slots:
     void on_fixPlaneSizeCB_toggled(bool checked);
 
 private:
-    KDChart::Chart *m_chart; // 图表对象
-    KDChart::BarDiagram *m_bars; // 柱状图对象
-    TableModel m_model; // 数据模型
+    KDChart::Chart *m_chart; // 图表对象，用于显示和管理图表元素
+    KDChart::BarDiagram *m_bars; // 柱状图对象，负责绘制柱状图
+    TableModel m_model; // 数据模型，存储图表数据
 };
 
 #endif /* MAINWINDOW_H */
