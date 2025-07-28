@@ -27,6 +27,7 @@ using namespace KDChart;
 /**
  * @brief 自定义图表窗口部件类
  * 该类继承自QWidget，用于展示如何设置KD Chart图表的背景、边框、标题和文本属性等
+ * 本示例主要演示了图表背景图片、边框样式、标题文本属性等的配置方法
  */
 class ChartWidget : public QWidget
 {
@@ -35,8 +36,9 @@ public:
     /**
      * @brief 构造函数
      * @param parent 父窗口部件，默认为nullptr
-     * 
-     * 初始化数据模型，创建柱状图，配置图表背景、边框、标题和文本属性等
+     * @return 无返回值
+     * @details 初始化数据模型，创建柱状图，配置图表背景、边框、标题和文本属性等
+     * 构造函数是类的核心，展示了如何自定义图表的各种视觉属性
      */
     explicit ChartWidget(QWidget *parent = nullptr)
         : QWidget(parent)
@@ -116,9 +118,9 @@ public:
     }
 
 private:
-    Chart m_chart; // 图表对象
-    QStandardItemModel m_model; // 数据模型
-    QPixmap pixmap; // 背景图片
+    Chart m_chart; // 图表对象，用于显示和管理图表及其所有元素
+    QStandardItemModel m_model; // 数据模型，存储和管理图表要显示的数据
+    QPixmap pixmap; // 背景图片，用于设置图表背景
 };
 
 /**
@@ -126,8 +128,7 @@ private:
  * @param argc 命令行参数数量
  * @param argv 命令行参数数组
  * @return 应用程序退出代码
- * 
- * 初始化Qt应用程序，创建并显示ChartWidget窗口部件，启动应用程序事件循环
+ * @details 初始化Qt应用程序，创建并显示ChartWidget窗口部件，启动应用程序事件循环
  */
 int main(int argc, char **argv)
 {
@@ -139,4 +140,8 @@ int main(int argc, char **argv)
     return app.exec(); // 运行应用程序事件循环
 }
 
+// TODO: Qt5.15.2升级 检查KDChart::BackgroundAttributes在Qt5.15.2中的兼容性
+// TODO: Qt5.15.2升级 验证QPixmap和QVBoxLayout行为变化
+// TODO: C++17升级 考虑使用constexpr优化常量表达式
+// TODO: C++17升级 考虑使用结构化绑定优化多变量赋值
 #include "main.moc"

@@ -22,14 +22,6 @@
  * @return 应用程序退出代码
  * @details 程序入口点，负责初始化Qt框架，创建并显示主窗口，启动应用程序事件循环。
  * 这是整个坐标轴配置示例的入口，简单明了地设置了应用程序的基本结构。
- * 
- * Qt5.15.2升级说明：
- * - QApplication构造函数在Qt5.15.2中保持兼容
- * - exec()方法在Qt5.15.2中保持兼容
- * 
- * C++17升级说明：
- * - 此代码与C++17标准完全兼容
- * - 可以考虑使用C++17的结构化绑定和if constexpr等特性优化代码（如需要）
  */
 int main(int argc, char **argv)
 {
@@ -40,3 +32,6 @@ int main(int argc, char **argv)
 
     return app.exec(); // 运行应用程序事件循环，等待用户交互并处理事件
 }
+
+// TODO: Qt5.15.2升级 检查QApplication在Qt5.15.2中的行为变化
+// TODO: C++17升级 考虑使用constexpr优化常量表达式

@@ -27,14 +27,6 @@ class BarDiagram; // 前向声明KDChart::BarDiagram类
  * 该类继承自QWidget和Ui::MainWindow，负责创建和管理图表界面，
  * 展示如何配置坐标轴的各种属性，如位置、标题、标签、刻度线等。
  * 本示例主要演示了坐标轴的配置方法和效果。
- * 
- * Qt5.15.2升级说明：
- * - QWidget基类在Qt5.15.2中保持兼容
- * - KDChart库的API在Qt5.15.2下工作正常
- * 
- * C++17升级说明：
- * - 此代码与C++17标准完全兼容
- * - 可考虑使用C++17的嵌套命名空间语法优化代码结构
  */
 class MainWindow : public QWidget, private Ui::MainWindow
 {
@@ -56,5 +48,9 @@ private:
     TableModel m_model;           // 数据模型，存储和管理图表要显示的数据
     KDChart::BarDiagram *m_lines; // 柱状图对象，用于绘制和配置柱状图
 };
+
+// TODO: Qt5.15.2升级 检查KDChart相关类在Qt5.15.2中的兼容性
+// TODO: Qt5.15.2升级 验证QWidget使用规范
+// TODO: C++17升级 考虑使用std::optional优化可能为空的指针成员
 
 #endif /* MAINWINDOW_H */

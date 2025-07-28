@@ -26,15 +26,6 @@ using namespace KDChart;  // 使用KDChart命名空间
  * @return 无返回值
  * @details 初始化UI组件，创建图表和数据模型，配置坐标轴的位置、标题、标签和刻度线等属性。
  * 本构造函数是示例的核心，展示了如何自定义坐标轴的各种视觉属性。
- * 
- * Qt5.15.2升级说明：
- * - QWidget基类和相关UI组件在Qt5.15.2中保持兼容
- * - KDChart库的API在Qt5.15.2下工作正常
- * - 未使用已废弃的Qt API
- * 
- * C++17升级说明：
- * - 此代码与C++17标准完全兼容
- * - 可考虑使用C++17的结构化绑定和if-constexpr等特性优化代码
  */
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
@@ -164,3 +155,8 @@ MainWindow::MainWindow(QWidget *parent)
     // 将图表分配给坐标平面
     m_chart->coordinatePlane()->replaceDiagram(m_lines);
 }
+
+// TODO: Qt5.15.2升级 检查KDChart::CartesianAxis在Qt5.15.2中的兼容性
+// TODO: Qt5.15.2升级 验证QHBoxLayout和相关UI组件行为变化
+// TODO: C++17升级 考虑使用std::filesystem替代QFile进行文件操作
+// TODO: C++17升级 考虑使用结构化绑定优化多变量赋值
