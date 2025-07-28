@@ -2,6 +2,7 @@
 <img src="images/kdchart.png" width="50%" align="center"/>
 <img src="images/kdChart-trademark.png" width="50%" align="center"/>
 </div>
+
 # 简介
 
 KD Chart 是一款用于创建商业和科学图表的工具。
