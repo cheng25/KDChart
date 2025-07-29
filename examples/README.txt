@@ -1,4 +1,4 @@
- Running the examples
+﻿ Running the examples
 
 The examples are only compiled automatically if you pass the -unittests option
 to configure. This is because some examples require the "testtools" internal

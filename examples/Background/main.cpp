@@ -86,6 +86,7 @@ public:
         header->setTextAttributes(hta);
 
         // 配置坐标平面的背景属性
+        // TODO: Qt5.15.2升级 检查KDChart::BackgroundAttributes在Qt5.15.2中的兼容性
         BackgroundAttributes pba;
         pba.setPixmap(*pixmap); // 设置背景图片
         pba.setPixmapMode(BackgroundAttributes::BackgroundPixmapModeStretched); // 设置图片拉伸模式
@@ -112,6 +113,7 @@ public:
         header->setFrameAttributes(hfa);
 
         // 设置布局
+        // TODO: Qt5.15.2升级 验证QVBoxLayout在Qt5.15.2中的行为变化
         auto *l = new QVBoxLayout(this);
         l->addWidget(&m_chart);
         setLayout(l);
@@ -132,6 +134,7 @@ private:
  */
 int main(int argc, char **argv)
 {
+    // TODO: C++17升级 使用constexpr优化常量表达式
     QApplication app(argc, argv);
 
     ChartWidget w; // 创建图表窗口部件

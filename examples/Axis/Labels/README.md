@@ -1,80 +1,88 @@
-# 坐标轴标签配置示例
+# 坐标轴标签自定义示例
 
-## 项目功能
-
-本示例展示了如何使用KD Chart库配置坐标轴标签、注释和自定义刻度等高级功能。主要特性包括：
-
-1. 自定义坐标轴标签文本和格式
-2. 添加和管理坐标轴注释
-3. 控制注释位置的网格线显示
-4. 设置自定义刻度和刻度长度
-5. 旋转坐标轴标签以避免重叠
-6. 配置图例位置和对齐方式
-7. 从CSV文件加载图表数据
+## 项目概述
+该示例展示了如何使用KD Chart库创建自定义坐标轴标签，实现坐标轴范围控制、标签格式化和注释功能。通过AdjustedCartesianAxis类扩展了KDChart的坐标轴功能，支持自定义边界设置和标签过滤。
 
 ## 文件结构
+- **AdjustedCartesianAxis.h/cpp**: 自定义坐标轴实现，支持边界控制和标签过滤
+- **mainwindow.h/cpp**: 主窗口类，管理图表布局和用户交互
+- **main.cpp**: 应用程序入口点
+- **BarChart.qrc**: 资源文件配置
+- **mainwindow.ui**: UI界面设计文件
 
-```
-examples/Axis/Labels/
-├── AdjustedCartesianAxis.cpp  // 自定义坐标轴实现
-├── AdjustedCartesianAxis.h    // 自定义坐标轴头文件
-├── BarChart.qrc               // 资源文件
-├── CMakeLists.txt             // 构建配置文件
-├── README.md                  // 项目说明文档
-├── barSimple.csv              // 示例数据文件
-├── main.cpp                   // 程序入口
-├── mainwindow.cpp             // 主窗口实现
-├── mainwindow.h               // 主窗口头文件
-└── mainwindow.ui              // UI设计文件
-```
+## 类功能说明
+### AdjustedCartesianAxis类
+- **核心功能**: 扩展KDChart::CartesianAxis，提供坐标轴边界控制和自定义标签格式化
+- **关键方法**: 
+  - `setBounds(qreal lower, qreal upper)`: 设置坐标轴显示范围
+  - `customizedLabel(const QString &label)`: 过滤超出边界的标签
+
+### MainWindow类
+- **核心功能**: 创建图表界面，配置坐标轴属性，处理用户交互
+- **关键属性**: 
+  - `m_chart`: 图表对象，管理图表布局
+  - `m_xAxis/m_yAxis`: 坐标轴对象，控制标签显示
+  - `m_model`: 数据模型，存储图表数据
+- **主要方法**: 
+  - `annotationsToggled(bool)`: 切换坐标轴注释显示
+  - `gridLinesOnAnnotationsToggled(bool)`: 控制注释位置网格线显示
 
 ## 代码执行逻辑
-
-1. 程序入口点为`main.cpp`中的`main`函数，创建Qt应用程序对象和`MainWindow`实例
-2. `MainWindow`构造函数初始化UI组件，创建图表布局和图表对象
-3. 从CSV文件加载数据到`TableModel`对象
-4. 创建折线图并设置数据模型
-5. 配置X轴和Y轴，包括标签、自定义刻度和旋转属性
-6. 设置图例位置和对齐方式
-7. 连接UI控件的信号与槽函数，实现交互功能
-8. 槽函数`annotationsToggled`和`gridLinesOnAnnotationsToggled`处理用户交互，更新图表注释和网格线显示
-
-## Qt 5.15.2和C++17兼容性说明
-
-- 代码使用Qt 5.15.2兼容的API，所有Qt类和方法均符合该版本规范
-- 使用C++17标准特性，包括自动类型推导(`auto`)、列表初始化和智能指针
-- 代码中未使用已废弃的Qt API，确保在Qt 5.15.2下正常编译和运行
-- 所有头文件包含和命名空间使用均符合C++17标准
+1. **应用程序初始化**: `main()`函数创建QApplication和MainWindow实例
+2. **UI组件设置**: `MainWindow`构造函数调用`setupUi()`初始化界面
+3. **图表配置**: 创建KDChart::Chart对象和布局管理器
+4. **数据加载**: 从CSV文件加载图表数据到TableModel
+5. **坐标轴设置**: 创建自定义坐标轴，配置标签旋转和位置
+6. **用户交互**: 连接复选框信号到注释显示控制槽函数
+7. **事件循环**: 启动QApplication事件循环，响应用户操作
 
 ## 执行逻辑关系
-
 ### 类关系图
-
 ```mermaid
 graph TD
-    A[QApplication] --> B[MainWindow]
+    A[QWidget] --> B[MainWindow]
     B --> C[KDChart::Chart]
     B --> D[TableModel]
     B --> E[KDChart::LineDiagram]
-    B --> F[KDChart::CartesianAxis]
-    B --> G[KDChart::Legend]
-    E --> F
-    C --> E
-    C --> G
-    D --> E
+    E --> F[KDChart::CartesianAxis]
+    E --> G[AdjustedCartesianAxis]
+    G --> H[KDChart::CartesianAxis]
+    B --> I[KDChart::Legend]
 ```
 
 ### 函数执行流程图
-
 ```mermaid
 graph LR
-    main[main函数] --> createApp[创建QApplication]
-    createApp --> createWindow[创建MainWindow实例]
-    createWindow --> showWindow[显示主窗口]
-    showWindow --> exec[运行事件循环]
-    exec --> event[处理用户事件]
-    event --> annotationsToggled[切换注释显示]
-    event --> gridLinesToggled[切换注释网格线显示]
-    annotationsToggled --> updateChart[更新图表]
-    gridLinesToggled --> updateChart
+    main --> QApplication
+    main --> MainWindow
+    MainWindow --> setupUi
+    MainWindow --> QHBoxLayout
+    MainWindow --> KDChart::Chart
+    MainWindow --> loadFromCSV
+    MainWindow --> LineDiagram
+    LineDiagram --> setModel
+    LineDiagram --> addAxis
+    MainWindow --> annotationsToggled
+    MainWindow --> gridLinesOnAnnotationsToggled
+    annotationsToggled --> setAnnotations
+    gridLinesOnAnnotationsToggled --> setGridAttributes
 ```
+
+## Qt5.15.2升级说明
+- **主要变更点**: 
+  - 检查QWidget::setLayout在高DPI环境下的布局行为
+  - 验证KDChart::CartesianAxis坐标系计算逻辑变更
+  - 确认QApplication构造函数参数要求变更
+- **TODO项**: 
+  - `// TODO: Qt5.15.2升级 检查QWidget::setLayout在Qt5.15.2中的高DPI布局行为`
+  - `// TODO: Qt5.15.2升级 检查KDChart::CartesianAxis在Qt5.15.2中的坐标系计算逻辑变更`
+  - `// TODO: Qt5.15.2升级 验证QApplication构造函数在Qt5.15.2中的参数要求变更`
+
+## C++17升级说明
+- **主要调整**: 
+  - 使用constexpr优化成员变量初始化
+  - 考虑使用std::unique_ptr管理动态对象
+  - 应用[[maybe_unused]]标记未使用参数
+- **TODO项**: 
+  - `// TODO: C++17升级 使用std::string_view优化字符串处理`
+  - `// TODO: C++17升级 使用[[maybe_unused]]标记未使用的命令行参数`

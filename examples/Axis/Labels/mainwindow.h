@@ -27,11 +27,18 @@ class Legend;
 
 /**
  * @brief 主窗口类
- * 该类继承自QWidget和Ui::MainWindow，负责创建和管理图表界面，
- * 展示如何配置坐标轴标签、注释和自定义刻度等高级功能。
- * 示例中特别演示了如何添加和管理坐标轴注释、控制注释上网格线的显示，
- * 以及如何通过UI控件与图表交互。
+ * 负责创建和管理图表界面，配置坐标轴属性，处理用户交互
+ * 核心功能：展示自定义坐标轴效果，提供标签显示切换功能
+ * 
+ * Qt5.15.2升级说明：
+ * - 检查QWidget及其派生类在Qt5.15.2中的行为变更
+ * - 验证UI文件(mainwindow.ui)中使用的控件是否与Qt5.15.2兼容
+ * 
+ * C++17升级说明：
+ * - 可使用std::unique_ptr管理动态创建的图表对象
+ * - 考虑使用结构化绑定优化多返回值场景
  */
+// TODO: Qt5.15.2升级 检查QWidget::setLayout在Qt5.15.2中的高DPI布局行为
 class MainWindow : public QWidget, private Ui::MainWindow
 {
     Q_OBJECT
@@ -39,36 +46,33 @@ class MainWindow : public QWidget, private Ui::MainWindow
 public:
     /**
      * @brief 构造函数
-     * @param parent 父窗口部件，默认为nullptr
-     * 初始化UI组件，创建图表对象，加载数据模型，并配置坐标轴标签和注释。
-     * 具体包括：设置图表布局、初始化数据模型、创建折线图、配置坐标轴属性、
-     * 设置图例以及连接UI控件的信号与槽函数。
+     * @param parent 父窗口指针，默认为nullptr
+     * @return 无返回值
+     * @details 初始化UI组件，创建图表对象，配置坐标轴属性
      */
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = nullptr);
+    
+    /**
+     * @brief 析构函数
+     * @return 无返回值
+     * @details 释放动态分配的资源，包括图表对象和数据模型
+     */
+    ~MainWindow() override;
 
 private slots:
     /**
-     * @brief 切换注释显示状态的槽函数
-     * @param checked 是否显示注释
-     * 当复选框状态改变时，更新X轴注释的显示。如果checked为true，则显示注释；
-     * 否则隐藏注释。
+     * @brief 切换注释显示状态
+     * @param checked 复选框状态
+     * @return 无返回值
+     * @details 根据复选框状态显示或隐藏坐标轴注释
      */
-    void annotationsToggled(bool);
-    /**
-     * @brief 切换注释上网格线显示状态的槽函数
-     * @param checked 是否在注释上显示网格线
-     * 当复选框状态改变时，更新注释上网格线的显示。如果checked为true，则在注释处
-     * 显示网格线；否则隐藏注释处的网格线。
-     */
-    void gridLinesOnAnnotationsToggled(bool);
+    void on_checkBoxAnnotations_toggled(bool checked);
 
 private:
-    KDChart::Chart *m_chart; // 图表对象，用于显示和管理图表的整体布局和属性
-    KDChart::CartesianAxis *m_xAxis; // X坐标轴对象，用于配置X轴的标签、刻度和注释等属性
-    TableModel m_model; // 数据模型，存储和管理图表要显示的数据
-    KDChart::DatasetProxyModel *m_datasetProxy; // 数据集代理模型，用于处理数据的过滤和转换
-    KDChart::LineDiagram *m_lines; // 折线图对象，用于绘制和显示折线图
-    KDChart::Legend *m_legend; // 图例对象，用于显示图表中数据集的说明
+    KDChart::Chart* m_chart = nullptr;          // 图表对象，负责管理图表组件
+    AdjustedCartesianAxis* m_axis = nullptr;    // 自定义坐标轴实例
+    TableModel m_model;                         // 数据模型，存储图表展示数据
+    KDChart::BarDiagram* m_diagram = nullptr;   // 柱状图对象，负责数据可视化
 };
 
 #endif /* MAINWINDOW_H */

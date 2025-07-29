@@ -1,21 +1,22 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
-** 此文件是KD Chart库的示例文件。
+** This file is part of the KD Chart library.
+** 此文件是KD Chart库的示例文件，展示Levey-Jennings图表的实现。
 **
+** SPDX-FileCopyrightText: 2001 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
 ** 版权所有 (C) 2001 Klarälvdalens Datakonsult AB，KDAB集团公司 <info@kdab.com>
 **
+** SPDX-License-Identifier: MIT
 ** 许可证: MIT
 **
 ****************************************************************************/
 
 #include <QApplication>
-
 #include <KDChartChart>
 #include <KDChartLeveyJenningsAxis>
 #include <KDChartLeveyJenningsCoordinatePlane>
 #include <KDChartLeveyJenningsDiagram>
 #include <KDChartLeveyJenningsGridAttributes>
-
 #include <QDateTime>
 #include <QSplitter>
 #include <QStandardItemModel>
@@ -24,8 +25,8 @@
 
 /**
  * @brief 选择动画器类
- * 
- * 继承自QObject，用于在表格视图中自动切换选中项，实现动画效果。
+ * @details 继承自QObject，用于在表格视图中自动切换选中项，实现数据高亮动画效果
+ *          主要应用于Levey-Jennings图表与表格数据的联动展示，帮助用户直观理解数据对应关系
  */
 class SelectionAnimator : public QObject
 {
@@ -33,35 +34,36 @@ class SelectionAnimator : public QObject
 public:
     /**
      * @brief 构造函数
-     * @param view 表格视图对象
-     * 
-     * 创建一个选择动画器实例，并关联到指定的表格视图。
+     * @param view 表格视图对象指针，动画器将控制该视图的选中项
+     * @details 创建选择动画器实例，初始化定时器并设置1秒间隔触发动画
      */
     SelectionAnimator(QAbstractItemView *view)
         : QObject(view)
-        , view(view)
+        , view(view) // 初始化表格视图指针
     {
+        // 创建定时器对象并设置父对象为当前动画器
         auto *const t = new QTimer(this);
+        // 连接定时器timeout信号到animate槽函数
         connect(t, &QTimer::timeout, this, &SelectionAnimator::animate);
-        t->start(1000); // 每秒触发一次动画
+        t->start(1000); // 设置定时器间隔为1000毫秒（1秒）
     }
 
 protected Q_SLOTS:
     /**
      * @brief 动画槽函数
-     * 
-     * 切换表格视图中的选中项，实现自动选择的动画效果。
+     * @details 实现表格行的循环选中效果，每次选中下一行数据，到达末尾后回到起始行
      */
     void animate()
     {
-        // 计算下一行的索引，循环选择
+        // 计算下一行索引，使用模运算实现循环
         const int row = (view->selectionModel()->currentIndex().row() + 1) % view->model()->rowCount();
+        // 设置当前选中项，清除原有选择并选择新行
         view->selectionModel()->setCurrentIndex(view->model()->index(row, 0), QItemSelectionModel::ClearAndSelect);
     }
 
 private:
-    QAbstractItemView *const view; // 关联的表格视图对象
-};
+    QAbstractItemView *const view; // 关联的表格视图对象指针，用于操作选中状态
+}; // TODO: C++17升级 考虑使用final修饰符
 
 #include "main.moc"
 
@@ -70,16 +72,16 @@ private:
  * @param argc 命令行参数个数
  * @param argv 命令行参数数组
  * @return 应用程序退出代码
- * 
- * 创建一个Levey-Jennings图表示例，展示质量控制数据的可视化。
+ * @details 创建Levey-Jennings图表示例，展示实验室质量控制数据的时间序列可视化
+ *          Levey-Jennings图表常用于临床实验室，监控检测结果的稳定性和质量控制状态
  */
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv); // 创建Qt应用程序实例
 
-    QStandardItemModel model(14, 6); // 创建数据模型，14行6列
+    QStandardItemModel model(14, 6); // 创建数据模型，14行6列（14个数据点，6个属性）
 
-    // 设置表头数据
+    // 设置表头数据（批次、数值、合格状态、日期时间、平均值、标准差）
     model.setHeaderData(0, Qt::Horizontal, QObject::tr("批次"));
     model.setHeaderData(1, Qt::Horizontal, QObject::tr("数值"));
     model.setHeaderData(2, Qt::Horizontal, QObject::tr("合格"));
@@ -139,7 +141,7 @@ int main(int argc, char **argv)
     model.setData(model.index(9, 0), 2);
     model.setData(model.index(9, 1), 180);
     model.setData(model.index(9, 2), true);
-    model.setData(model.index(9, 3), QDateTime::fromString("2007-07-10T21:00:00", Qt::ISODate));
+    model.setData(model.index(9, 3), QDateTime::fromString("2007-10T21:00:00", Qt::ISODate));
 
     // 此值完全超出范围，因此会被截断
     model.setData(model.index(10, 0), 2);
@@ -163,15 +165,15 @@ int main(int argc, char **argv)
     model.setData(model.index(13, 2), true);
     model.setData(model.index(13, 3), QDateTime::fromString("2007-07-12T21:00:00", Qt::ISODate));
 
-    auto *chart = new KDChart::Chart(); // 创建图表对象
+    auto *chart = new KDChart::Chart(); // 创建图表容器对象
 
-    auto *diagram = new KDChart::LeveyJenningsDiagram; // 创建Levey-Jennings图表
+    auto *diagram = new KDChart::LeveyJenningsDiagram; // 创建Levey-Jennings图表对象
     diagram->setModel(&model); // 设置数据模型
-    diagram->setExpectedMeanValue(200); // 设置预期平均值
-    diagram->setExpectedStandardDeviation(20); // 设置预期标准差
-    auto *plane = new KDChart::LeveyJenningsCoordinatePlane; // 创建坐标系
-    chart->replaceCoordinatePlane(plane); // 替换图表的坐标系
-    plane->replaceDiagram(diagram); // 替换坐标系的图表
+    diagram->setExpectedMeanValue(200); // 设置预期平均值（质量控制目标值）
+    diagram->setExpectedStandardDeviation(20); // 设置预期标准差（质量控制允许波动范围）
+    auto *plane = new KDChart::LeveyJenningsCoordinatePlane; // 创建Levey-Jennings专用坐标系
+    chart->replaceCoordinatePlane(plane); // 替换图表的默认坐标系
+    plane->replaceDiagram(diagram); // 将图表对象关联到坐标系
 
     /*diagram->setLotChangedSymbolPosition( Qt::AlignBottom );
     diagram->setSensorChangedSymbolPosition( Qt::AlignTop );
@@ -186,37 +188,37 @@ int main(int argc, char **argv)
     // 设置传感器更换时间点
     diagram->setSensorChanges(QVector<QDateTime>() << QDateTime::fromString("2007-07-10T11:00:00", Qt::ISODate));
 
-    // 添加左侧坐标轴
+    // 添加左侧坐标轴（显示测量值）
     auto *axis = new KDChart::LeveyJenningsAxis(diagram);
     axis->setPosition(KDChart::CartesianAxis::Left);
     diagram->addAxis(axis);
 
-    // 添加右侧坐标轴
+    // 添加右侧坐标轴（显示计算值）
     auto *axis2 = new KDChart::LeveyJenningsAxis(diagram);
     axis2->setPosition(KDChart::CartesianAxis::Right);
     axis2->setType(KDChart::LeveyJenningsGridAttributes::Calculated);
     diagram->addAxis(axis2);
 
-    // 添加底部坐标轴
+    // 添加底部坐标轴（显示时间）
     KDChart::CartesianAxis *axis3 = new KDChart::LeveyJenningsAxis(diagram);
     axis3->setPosition(KDChart::CartesianAxis::Bottom);
     diagram->addAxis(axis3);
 
-    auto *tv = new QTableView; // 创建表格视图
+    auto *tv = new QTableView; // 创建表格视图用于数据展示
     tv->setModel(&model); // 设置数据模型
-    tv->setSelectionModel(diagram->selectionModel()); // 共享选择模型
+    tv->setSelectionModel(diagram->selectionModel()); // 共享选择模型，实现图表与表格联动选择
 
-    auto *splitter = new QSplitter; // 创建分割器
+    auto *splitter = new QSplitter; // 创建分割器布局
     splitter->addWidget(tv); // 添加表格视图
     splitter->addWidget(chart); // 添加图表
 
-    splitter->show(); // 显示分割器
+    splitter->show(); // 显示主窗口
 
-    new SelectionAnimator(tv); // 创建选择动画器
+    new SelectionAnimator(tv); // 创建选择动画器实例，实现自动选中效果
 
     return app.exec(); // 运行应用程序事件循环
-}
-// TODO: Qt5.15.2升级 检查KDChart::LeveyJennings相关类在Qt5.15.2中的兼容性
-// TODO: Qt5.15.2升级 验证QDateTime::fromString在Qt5.15.2中的行为是否有变化
-// TODO: C++17升级 考虑使用结构化绑定优化数据模型的设置
-// TODO: C++17升级 考虑使用if constexpr优化条件判断逻辑
+} // TODO: Qt5.15.2升级 检查LeveyJenningsDiagram在Qt5.15.2中的API兼容性
+// TODO: Qt5.15.2升级 验证QDateTime::fromString()在新版本中的行为变化
+// TODO: C++17升级 使用std::make_unique管理动态内存（如chart、diagram等对象）
+// TODO: C++17升级 使用结构化绑定优化数据模型设置代码
+// TODO: C++17升级 使用std::optional处理缺失的数值（如第3行数据）
