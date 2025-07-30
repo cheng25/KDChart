@@ -22,3 +22,4 @@ kdchart/tests/Gantt/unittest/unittest
 kdchart/tests/Gantt/unittest/TestUnittests
 
 Makefile*
+/install
