@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
 ** This file is part of the KD Chart library.
 ** 此文件是坐标轴标签配置示例的主窗口实现文件，包含MainWindow类的具体实现
@@ -117,4 +117,19 @@ void MainWindow::gridLinesOnAnnotationsToggled(bool onAnnotations)
     ga.setLinesOnAnnotations(onAnnotations); // 设置是否在注释位置显示网格线
     plane->setGridAttributes(Qt::Horizontal, ga); // 应用网格属性配置
     m_chart->update(); // 更新图表显示
+}
+
+/**
+ * @brief MainWindow类的析构函数实现
+ * @return 无返回值
+ * @details 释放动态分配的资源，包括图表对象和数据模型
+ */
+MainWindow::~MainWindow()
+{
+    delete m_chart; // 释放图表对象
+    // delete m_axis; // 释放自定义坐标轴对象
+    // delete m_diagram; // 释放柱状图对象
+    delete m_lines; // 释放折线图对象
+    delete m_xAxis; // 释放X轴坐标轴对象
+    delete m_legend; // 释放图例对象
 }

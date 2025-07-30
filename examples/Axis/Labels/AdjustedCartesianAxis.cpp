@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
 ** This file is part of the KD Chart library.
 **
@@ -21,7 +21,7 @@ AdjustedCartesianAxis::AdjustedCartesianAxis(KDChart::AbstractCartesianDiagram *
 {
     // 初始化基类构造函数
     // 设置坐标轴默认属性
-    setAllowOverlappingDataLabels(false);
+    // setAllowOverlappingDataLabels(false);
 }
 
 /**

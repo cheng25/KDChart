@@ -1,4 +1,4 @@
-/****************************************************************************
+﻿/****************************************************************************
 **
 ** This file is part of the KD Chart library.
 ** 此文件是坐标轴标签配置示例的主窗口头文件，定义了MainWindow类的接口
@@ -23,6 +23,7 @@ class DatasetProxyModel;
 class LineDiagram;
 class CartesianAxis;
 class Legend;
+class BarDiagram;
 }
 
 /**
@@ -53,6 +54,21 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     
     /**
+     * @brief 切换注释显示状态的槽函数实现
+     * @param showAnnotations 是否显示注释
+     * @return 无返回值
+     * @details 根据复选框状态在指定位置显示或隐藏坐标轴注释文本
+     */
+	void annotationsToggled(bool showAnnotations);
+
+    /**
+     * @brief 切换注释上网格线显示状态的槽函数实现
+     * @param onAnnotations 是否在注释位置显示网格线
+     * @return 无返回值
+     * @details 根据复选框状态控制注释位置的网格线显示
+     */
+	void gridLinesOnAnnotationsToggled(bool onAnnotations);
+    /**
      * @brief 析构函数
      * @return 无返回值
      * @details 释放动态分配的资源，包括图表对象和数据模型
@@ -66,13 +82,17 @@ private slots:
      * @return 无返回值
      * @details 根据复选框状态显示或隐藏坐标轴注释
      */
-    void on_checkBoxAnnotations_toggled(bool checked);
+    //void on_checkBoxAnnotations_toggled(bool checked);
 
 private:
     KDChart::Chart* m_chart = nullptr;          // 图表对象，负责管理图表组件
-    AdjustedCartesianAxis* m_axis = nullptr;    // 自定义坐标轴实例
+    //AdjustedCartesianAxis* m_axis = nullptr;    // 自定义坐标轴实例
     TableModel m_model;                         // 数据模型，存储图表展示数据
-    KDChart::BarDiagram* m_diagram = nullptr;   // 柱状图对象，负责数据可视化
+    //KDChart::BarDiagram* m_diagram = nullptr;   // 柱状图对象，负责数据可视化
+    KDChart::LineDiagram *m_lines = nullptr;    // 折线图对象，用于展示折线图数据
+    KDChart::CartesianAxis *m_xAxis = nullptr;  // X轴坐标轴对象
+    KDChart::Legend *m_legend = nullptr;        // 图例对象，显示图表数据的说明
+    KDChart::DatasetProxyModel *m_datasetProxy = nullptr; // 数据集代理模型，处理数据过滤和转换
 };
 
 #endif /* MAINWINDOW_H */
