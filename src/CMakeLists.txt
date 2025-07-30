@@ -192,6 +192,8 @@ ecm_generate_headers(
     COMMON_HEADER
     KDGantt
 )
+# Adding the following line of code will solve the “file INSTALL cannot find build/src/KDChart/kdgantt.h” problem.
+#configure_file("${CMAKE_CURRENT_BINARY_DIR}/KDChart/KDGantt" "${CMAKE_CURRENT_BINARY_DIR}/KDChart/kdgantt.h" COPYONLY)
 list(APPEND kdchart_HEADERS "${CMAKE_CURRENT_BINARY_DIR}/KDChart/kdgantt.h")
 
 install(
