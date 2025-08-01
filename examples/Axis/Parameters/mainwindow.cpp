@@ -1,7 +1,8 @@
-﻿/****************************************************************************
+/****************************************************************************
 **
-** 此文件是KD Chart库的一部分。
-** 此文件是坐标轴参数配置示例的主窗口实现文件，包含MainWindow类的具体实现
+** 此文件是KD Chart库的示例程序的一部分。
+** 这是坐标轴参数配置示例的主窗口实现文件，包含MainWindow类的具体实现，
+** 负责图表的创建、配置和交互处理。
 **
 ** 版权所有 (C) 2001 Klarälvdalens Datakonsult AB，一家KDAB集团公司 <info@kdab.com>
 **
@@ -9,36 +10,48 @@
 **
 ****************************************************************************/
 
+// 包含主窗口头文件
 #include "mainwindow.h"
 
-#include <KDChartAbstractCoordinatePlane>
-#include <KDChartChart>
-#include <KDChartDataValueAttributes>
-#include <KDChartLegend>
-#include <KDChartLineAttributes>
-#include <KDChartLineDiagram>
-#include <KDChartMarkerAttributes>
-#include <KDChartTextAttributes>
-#include <KDChartThreeDLineAttributes>
+// 包含KDChart相关头文件
+#include <KDChartAbstractCoordinatePlane> // 抽象坐标平面
+#include <KDChartChart>                 // 图表主类
+#include <KDChartDataValueAttributes>   // 数据值属性
+#include <KDChartLegend>                // 图例
+#include <KDChartLineAttributes>        // 线条属性
+#include <KDChartLineDiagram>           // 折线图
+#include <KDChartMarkerAttributes>      // 标记属性
+#include <KDChartTextAttributes>        // 文本属性
+#include <KDChartThreeDLineAttributes>  // 3D线条属性
 
-#include <QDebug>
-#include <QPainter>
+// 包含Qt相关头文件
+#include <QDebug>   // 调试输出
+#include <QPainter> // 绘图
 
+// 使用KDChart命名空间
 using namespace KDChart;
 
 /**
  * @brief MainWindow类的构造函数
  * @param parent 父窗口指针，默认为nullptr
- * 
- * 初始化主窗口UI，创建图表布局，加载数据模型，配置折线图和坐标轴。
- * 具体包括：设置UI界面、创建图表布局、加载CSV数据、配置折线图、
- * 设置四个坐标轴（底部、左侧、顶部、右侧）、配置坐标轴标题和属性、
- * 添加坐标轴到折线图、设置坐标轴单位后缀、配置图例以及初始化数据值属性。
+ * @details 初始化主窗口UI，创建图表布局，加载数据模型，配置折线图和坐标轴。
+ *          具体实现步骤：
+ *          1. 设置UI界面（调用setupUi）
+ *          2. 创建图表布局并添加到图表框架
+ *          3. 创建并配置图表对象
+ *          4. 从CSV文件加载数据
+ *          5. 创建并配置折线图
+ *          6. 创建四个坐标轴（底部、左侧、顶部、右侧）
+ *          7. 配置坐标轴标题和属性
+ *          8. 将坐标轴添加到折线图
+ *          9. 设置坐标轴单位后缀
+ *          10. 配置图例
+ *          11. 初始化数据值属性
  */
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
 {
-    // 设置UI界面
+    // 调用UI表单生成的setupUi函数初始化界面
     setupUi(this);
 
     // 创建图表布局并添加到图表框架中
@@ -106,14 +119,21 @@ MainWindow::MainWindow(QWidget *parent)
     // 因此我们启用DVA，然后单独禁用我们不需要的部分。
     on_paintValuesCB_toggled(false); // 初始时不显示数据值
     on_paintMarkersCB_toggled(false); // 初始时不显示标记
+
+    // TODO: Qt5.15.2升级 检查KDChart::Chart::setGlobalLeading在Qt5.15.2中的行为
+    // TODO: Qt5.15.2升级 验证CartesianAxis::setPosition是否支持所有位置枚举值
+    // TODO: C++17升级 使用结构化绑定优化多变量声明
 }
 
 /**
  * @brief 处理线条类型下拉框变化事件
  * @param index 当前选中的索引
- * 
- * 根据选中的索引设置折线图的类型（普通、堆叠或百分比）。
- * 当用户选择不同的线条类型时，更新折线图的显示方式并刷新图表。
+ * @details 根据选中的索引设置折线图的类型（普通、堆叠或百分比）。
+ *          当用户选择不同的线条类型时，更新折线图的显示方式并刷新图表。
+ * @note 下拉框选项文本与折线图类型的对应关系：
+ *       - "Normal": 普通折线图
+ *       - "Stacked": 堆叠折线图
+ *       - "Percent": 百分比折线图
  */
 void MainWindow::on_lineTypeCB_currentIndexChanged(int index)
 {
@@ -127,29 +147,31 @@ void MainWindow::on_lineTypeCB_currentIndexChanged(int index)
     else
         qWarning(" 不匹配任何类型");
 
-    // 更新图表
+    // 更新图表以应用新设置
     m_chart->update();
+
+    // TODO: Qt5.15.2升级 检查LineDiagram::setType在Qt5.15.2中的API变化
 }
 
 /**
  * @brief 处理图例显示复选框状态变化事件
  * @param checked 是否选中
- * 
- * 根据复选框状态设置图例的可见性。如果checked为true，则显示图例；
- * 否则隐藏图例，并刷新图表。
+ * @details 根据复选框状态设置图例的可见性。如果checked为true，则显示图例；
+ *          否则隐藏图例，并刷新图表。
  */
 void MainWindow::on_paintLegendCB_toggled(bool checked)
 {
     m_legend->setVisible(checked);
-    m_chart->update();
+    m_chart->update(); // 刷新图表以应用新设置
+
+    // TODO: Qt5.15.2升级 检查Legend::setVisible在Qt5.15.2中的行为变化
 }
 
 /**
  * @brief 处理数值显示复选框状态变化事件
  * @param checked 是否选中
- * 
- * 根据复选框状态设置数据值的可见性，并配置文本属性。
- * 为每列数据设置不同颜色的文本，并根据复选框状态控制文本的显示或隐藏。
+ * @details 根据复选框状态设置数据值的可见性，并配置文本属性。
+ *          为每列数据设置不同颜色的文本，并根据复选框状态控制文本的显示或隐藏。
  */
 void MainWindow::on_paintValuesCB_toggled(bool checked)
 {
@@ -159,7 +181,7 @@ void MainWindow::on_paintValuesCB_toggled(bool checked)
     const int colCount = m_lines->model()->columnCount(); // 获取列数
     for (int iColumn = 0; iColumn < colCount; ++iColumn) {
         DataValueAttributes dva = m_lines->dataValueAttributes(iColumn);
-        dva.setVisible(true);
+        dva.setVisible(true); // 始终启用数据值属性
 
         TextAttributes ta(dva.textAttributes());
         ta.setRotation(0); // 文本不旋转
@@ -170,15 +192,17 @@ void MainWindow::on_paintValuesCB_toggled(bool checked)
         dva.setTextAttributes(ta);
         m_lines->setDataValueAttributes(iColumn, dva);
     }
-    m_chart->update(); // 刷新图表
+    m_chart->update(); // 刷新图表以应用新设置
+
+    // TODO: C++17升级 使用范围for循环替代传统for循环
+    // TODO: Qt5.15.2升级 检查TextAttributes在Qt5.15.2中的API变化
 }
 
 /**
  * @brief 处理标记显示复选框状态变化事件
  * @param checked 是否选中
- * 
- * 根据复选框状态设置标记的可见性，并配置标记样式和大小。
- * 支持为不同列设置不同的标记样式，并为特定值设置特定颜色的标记。
+ * @details 根据复选框状态设置标记的可见性，并配置标记样式和大小。
+ *          支持为不同列设置不同的标记样式，并为特定值设置特定颜色的标记。
  */
 void MainWindow::on_paintMarkersCB_toggled(bool checked)
 {
@@ -199,6 +223,7 @@ void MainWindow::on_paintMarkersCB_toggled(bool checked)
         dva.setVisible(true);
         MarkerAttributes ma(dva.markerAttributes());
 
+        // 根据当前选中的标记样式设置标记类型
         switch (markersStyleCB->currentIndex()) {
         case 0:
             ma.setMarkerStyle(MarkerAttributes::MarkerSquare); // 方形标记
@@ -229,7 +254,7 @@ void MainWindow::on_paintMarkersCB_toggled(bool checked)
             ma.setMarkerStyle(MarkerAttributes::MarkerFastCross); // 快速十字标记
             break;
         default:
-            Q_ASSERT(false);
+            Q_ASSERT(false); // 断言失败，表明出现了未处理的情况
         }
         ma.setVisible(checked); // 根据复选框状态设置标记可见性
 
@@ -253,63 +278,71 @@ void MainWindow::on_paintMarkersCB_toggled(bool checked)
                 yellowMarker.setVisible(checked);
                 yellowAttributes.setMarkerAttributes(yellowMarker);
                 yellowAttributes.setVisible(checked);
-                // cell specific attributes:
+                // 设置单元格特定属性
                 m_lines->setDataValueAttributes(index, yellowAttributes);
             }
         }
     }
 
-    m_chart->update(); // 刷新图表
+    m_chart->update(); // 刷新图表以应用新设置
+
+    // TODO: C++17升级 使用std::optional优化可能为空的映射查找
+    // TODO: Qt5.15.2升级 检查MarkerAttributes在Qt5.15.2中的API变化
 }
 
 /**
  * @brief 处理标记样式下拉框变化事件
  * @param index 当前选中的索引
- * 
- * 当标记样式下拉框选中不同的样式时，更新标记的显示样式。
- * 该函数会调用on_paintMarkersCB_toggled函数来应用新的样式。
+ * @details 当标记样式下拉框选中不同的样式时，更新标记的显示样式。
+ *          该函数会调用on_paintMarkersCB_toggled函数来应用新的样式。
+ * @note 参数index未使用，因为我们直接通过markersStyleCB->currentIndex()获取当前选中的索引
  */
 void MainWindow::on_markersStyleCB_currentIndexChanged(int index)
 {
-    Q_UNUSED(index);
-    on_paintMarkersCB_toggled(paintMarkersCB->isChecked());
+    Q_UNUSED(index); // 未使用的参数
+    on_paintMarkersCB_toggled(paintMarkersCB->isChecked()); // 应用新的标记样式
+
+    // TODO: C++17升级 使用[[maybe_unused]]属性标记未使用的参数
 }
 
 /**
  * @brief 处理标记宽度微调框值变化事件
  * @param i 当前值
- * 
- * 当标记宽度微调框的值变化时，同步更新标记高度微调框的值，
- * 并更新标记的大小。
+ * @details 当标记宽度微调框的值变化时，同步更新标记高度微调框的值，
+ *          并更新标记的大小。
+ * @note 参数i未使用，因为我们直接通过markersWidthSB->value()获取当前值
  */
 void MainWindow::on_markersWidthSB_valueChanged(int i)
 {
-    Q_UNUSED(i);
+    Q_UNUSED(i); // 未使用的参数
     markersHeightSB->setValue(markersWidthSB->value()); // 同步宽度和高度
     if (paintMarkersCB->isChecked())
         on_paintMarkersCB_toggled(true); // 如果标记可见，则更新标记
+
+    // TODO: C++17升级 使用[[maybe_unused]]属性标记未使用的参数
 }
 
 /**
  * @brief 处理标记高度微调框值变化事件
  * @param i 当前值
- * 
- * 当标记高度微调框的值变化时，同步更新标记宽度微调框的值，
- * 并更新标记的大小。
+ * @details 当标记高度微调框的值变化时，同步更新标记宽度微调框的值，
+ *          并更新标记的大小。
+ * @note 参数i未使用，因为我们直接通过markersHeightSB->value()获取当前值
  */
 void MainWindow::on_markersHeightSB_valueChanged(int /*i*/)
 {
     markersWidthSB->setValue(markersHeightSB->value()); // 同步宽度和高度
     if (paintMarkersCB->isChecked())
         on_paintMarkersCB_toggled(true); // 如果标记可见，则更新标记
+
+    // TODO: C++17升级 使用[[maybe_unused]]属性标记未使用的参数
 }
 
 /**
  * @brief 处理显示区域复选框状态变化事件
  * @param checked 是否选中
- * 
- * 根据复选框状态设置折线图的区域填充显示。如果checked为true，
- * 则显示区域填充，并设置透明度；否则隐藏区域填充。
+ * @details 根据复选框状态设置折线图的区域填充显示。如果checked为true，
+ *          则显示区域填充，并设置透明度；否则隐藏区域填充。
  */
 void MainWindow::on_displayAreasCB_toggled(bool checked)
 {
@@ -319,15 +352,16 @@ void MainWindow::on_displayAreasCB_toggled(bool checked)
         la.setTransparency(transparencySB->value()); // 设置透明度
     }
     m_lines->setLineAttributes(la);
-    m_chart->update(); // 刷新图表
+    m_chart->update(); // 刷新图表以应用新设置
+
+    // TODO: Qt5.15.2升级 检查LineAttributes::setDisplayArea在Qt5.15.2中的行为变化
 }
 
 /**
  * @brief 处理透明度微调框值变化事件
  * @param alpha 当前透明度值
- * 
- * 当透明度微调框的值变化时，更新区域填充的透明度，
- * 并确保区域填充处于显示状态。
+ * @details 当透明度微调框的值变化时，更新区域填充的透明度，
+ *          并确保区域填充处于显示状态。
  */
 void MainWindow::on_transparencySB_valueChanged(int alpha)
 {
@@ -335,15 +369,16 @@ void MainWindow::on_transparencySB_valueChanged(int alpha)
     la.setTransparency(alpha); // 设置透明度
     m_lines->setLineAttributes(la);
     on_displayAreasCB_toggled(true); // 确保区域填充处于显示状态
+
+    // TODO: Qt5.15.2升级 检查LineAttributes::setTransparency在Qt5.15.2中的API变化
 }
 
 /**
  * @brief 处理缩放因子微调框值变化事件
  * @param factor 当前缩放因子
- * 
- * 当缩放因子微调框的值变化时，更新图表的缩放比例。
- * 当factor大于1时放大图表，并显示滚动条；当factor等于1时恢复原始大小，
- * 并隐藏滚动条。
+ * @details 当缩放因子微调框的值变化时，更新图表的缩放比例。
+ *          当factor大于1时放大图表，并显示滚动条；当factor等于1时恢复原始大小，
+ *          并隐藏滚动条。
  */
 void MainWindow::on_zoomFactorSB_valueChanged(double factor)
 {
@@ -356,29 +391,34 @@ void MainWindow::on_zoomFactorSB_valueChanged(double factor)
     }
     m_chart->coordinatePlane()->setZoomFactorX(factor); // 设置X轴缩放因子
     m_chart->coordinatePlane()->setZoomFactorY(factor); // 设置Y轴缩放因子
-    m_chart->update(); // 刷新图表
+    m_chart->update(); // 刷新图表以应用新设置
+
+    // TODO: Qt5.15.2升级 检查AbstractCoordinatePlane::setZoomFactorX/Y在Qt5.15.2中的行为
+    // TODO: C++17升级 使用if constexpr优化条件判断
 }
 
 /**
  * @brief 处理水平滚动条值变化事件
  * @param hPos 当前水平位置
- * 
- * 当水平滚动条的值变化时，更新图表的缩放中心，实现水平平移图表。
+ * @details 当水平滚动条的值变化时，更新图表的缩放中心，实现水平平移图表。
  */
 void MainWindow::on_hSBar_valueChanged(int hPos)
 {
     m_chart->coordinatePlane()->setZoomCenter(QPointF(hPos / 1000.0, vSBar->value() / 1000.0));
-    m_chart->update(); // 刷新图表
+    m_chart->update(); // 刷新图表以应用新设置
+
+    // TODO: Qt5.15.2升级 检查AbstractCoordinatePlane::setZoomCenter在Qt5.15.2中的行为
 }
 
 /**
  * @brief 处理垂直滚动条值变化事件
  * @param vPos 当前垂直位置
- * 
- * 当垂直滚动条的值变化时，更新图表的缩放中心，实现垂直平移图表。
+ * @details 当垂直滚动条的值变化时，更新图表的缩放中心，实现垂直平移图表。
  */
 void MainWindow::on_vSBar_valueChanged(int vPos)
 {
     m_chart->coordinatePlane()->setZoomCenter(QPointF(hSBar->value() / 1000.0, vPos / 1000.0));
-    m_chart->update(); // 刷新图表
+    m_chart->update(); // 刷新图表以应用新设置
+
+    // TODO: Qt5.15.2升级 检查AbstractCoordinatePlane::setZoomCenter在Qt5.15.2中的行为
 }

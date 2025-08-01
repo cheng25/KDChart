@@ -1,13 +1,13 @@
-﻿/****************************************************************************
+/****************************************************************************
 **
 ** This file is part of the KD Chart library.
 ** 此文件是坐标轴配置示例的主窗口头文件，定义了MainWindow类的接口
 **
 ** SPDX-FileCopyrightText: 2001 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
-** 版权所有: 2001 Klarälvdalens Datakonsult AB (KDAB集团公司)
+** 版权所有: 2001年KDAB集团公司(Klarälvdalens Datakonsult AB)
 **
 ** SPDX-License-Identifier: MIT
-** 许可协议: MIT
+** 许可协议: MIT开源许可
 **
 ****************************************************************************/
 
@@ -15,18 +15,18 @@
 #define MAINWINDOW_H
 
 #include "ui_mainwindow.h"  // 包含UI设计文件生成的头文件
-#include <TableModel.h>     // 包含数据模型类头文件
+#include <TableModel.h>     // 包含表格数据模型类头文件
 
 namespace KDChart {
-class Chart;      // 前向声明KDChart::Chart类
-class BarDiagram; // 前向声明KDChart::BarDiagram类
+class Chart;      // 前向声明KDChart::Chart类（图表核心类）
+class BarDiagram; // 前向声明KDChart::BarDiagram类（柱状图类）
 }
 
 /**
  * @brief 主窗口类
  * @details 继承自QWidget和Ui::MainWindow接口，是坐标轴配置示例的核心容器类
  *          负责整合图表组件、数据模型和UI交互元素，实现坐标轴的多样化配置演示
- *          支持坐标轴位置调整、标题设置、刻度样式自定义等核心功能
+ *          支持坐标轴位置调整、标题设置、刻度样式自定义等核心功能。
  */
 class MainWindow : public QWidget, private Ui::MainWindow
 {
@@ -36,13 +36,7 @@ public:
     /**
      * @brief 构造函数
      * @param parent 父窗口指针，默认为nullptr
-     * @details 完成以下关键初始化工作：
-     *          1. 调用UI初始化函数setupUi
-     *          2. 创建KDChart图表对象并配置坐标系
-     *          3. 初始化TableModel数据模型并加载CSV数据
-     *          4. 创建柱状图对象并关联数据模型
-     *          5. 设置坐标轴默认属性（位置、标题、刻度间隔等）
-     *          6. 将图表组件添加到主窗口布局
+     * @details 初始化UI，创建图表对象，设置数据模型，并配置坐标轴属性。
      */
     MainWindow(QWidget *parent = nullptr);
 

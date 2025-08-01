@@ -1,17 +1,18 @@
-﻿/****************************************************************************
+/****************************************************************************
 **
 ** This file is part of the KD Chart library.
 ** 此文件是坐标轴配置示例的主窗口实现文件，包含MainWindow类的具体实现
+** 示例演示了如何在KDChart中配置多位置坐标轴、自定义坐标轴样式和属性
 **
 ** SPDX-FileCopyrightText: 2001 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
-** 版权所有: 2001 Klarälvdalens Datakonsult AB (KDAB集团公司)
+** 版权所有: 2001年KDAB集团公司(Klarälvdalens Datakonsult AB)
 **
 ** SPDX-License-Identifier: MIT
-** 许可协议: MIT
+** 许可协议: MIT开源许可
 **
 ****************************************************************************/
 
-#include "mainwindow.h"  // 包含主窗口头文件
+#include "mainwindow.h"      // 包含主窗口头文件
 #include <KDChartBarDiagram>    // 包含柱状图类头文件
 #include <KDChartChart>         // 包含图表类头文件
 #include <KDChartFrameAttributes> // 包含框架属性类头文件
@@ -23,15 +24,8 @@ using namespace KDChart;  // 使用KDChart命名空间
 /**
  * @brief MainWindow类构造函数
  * @param parent 父窗口指针，默认为nullptr
- * @details 该构造函数是坐标轴配置示例的核心实现，完成以下关键任务：
- *          1. 初始化UI界面组件和布局管理器
- *          2. 创建KDChart图表框架和数据模型
- *          3. 配置柱状图显示属性
- *          4. 创建并定制多位置坐标轴（上、下、左、右）
- *          5. 设置坐标轴标题、文本样式和刻度属性
- *          6. 将所有组件整合到主窗口布局中
- *          本示例重点展示了坐标轴的高级定制功能，包括多坐标轴共存、
- *          样式差异化配置和动态属性调整等核心特性。
+ * @details 初始化UI组件，创建图表对象，配置数据模型，并设置坐标轴属性。
+ *          本示例演示了如何在KDChart中实现多位置坐标轴的定制化配置。
  */
 MainWindow::MainWindow(QWidget *parent)
     : QWidget(parent)
@@ -85,9 +79,9 @@ MainWindow::MainWindow(QWidget *parent)
 #endif
 
     // 设置坐标轴标题
-    topAxis->setTitleText("Abscissa Top configured size and color"); // 顶部坐标轴标题文本
-    leftAxis->setTitleText("left Ordinate: fonts configured");      // 左侧坐标轴标题文本
-    rightAxis->setTitleText("right Ordinate: default settings");   // 右侧坐标轴标题文本
+    topAxis->setTitleText("Abscissa Top configured size and color"); // 顶部坐标轴标题文本：已配置大小和颜色
+    leftAxis->setTitleText("left Ordinate: fonts configured");      // 左侧坐标轴标题文本：已配置字体
+    rightAxis->setTitleText("right Ordinate: default settings");   // 右侧坐标轴标题文本：默认设置
     bottomAxis->setTitleText("Abscissa Bottom");                    // 底部坐标轴标题文本
 
     // 配置标题文本属性
@@ -148,7 +142,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // 将图表分配给坐标平面
     m_chart->coordinatePlane()->replaceDiagram(m_lines);
-}
+} // MainWindow::MainWindow
 
 // TODO: Qt5.15.2升级 检查KDChart::CartesianAxis在Qt5.15.2中的坐标系计算逻辑变化
 // TODO: Qt5.15.2升级 验证QHBoxLayout在高DPI环境下的布局计算精度

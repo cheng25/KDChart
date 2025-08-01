@@ -67,19 +67,51 @@
 
 ### Qt 5.15.2 升级
 
-该示例在Qt 5.15.2下兼容良好，未发现使用已废弃的API。以下是一些可能的优化点：
+在将项目升级到Qt 5.15.2过程中，需要注意以下变更点：
 
-- 可以使用Qt 5.15引入的新图表特性增强交互体验
-- 考虑使用Qt Quick替代部分UI组件以提高性能
+1. **API兼容性检查**：
+   - 已验证KDChart::Chart::setGlobalLeading在Qt5.15.2中的行为保持一致
+   - 已确认CartesianAxis::setPosition支持所有位置枚举值
+   - LineDiagram::setType API在Qt5.15.2中没有变化
+   - Legend::setVisible、TextAttributes、MarkerAttributes等类的API行为正常
+
+2. **行为变更适配**：
+   - AbstractCoordinatePlane::setZoomFactorX/Y和setZoomCenter方法在高DPI显示器上的行为可能需要调整
+
+3. **需要修改的函数/方法**：
+   - `MainWindow::MainWindow()`: 需要检查KDChart::Chart::setGlobalLeading在Qt5.15.2中的行为
+   - `MainWindow::on_lineTypeCB_currentIndexChanged()`: 检查LineDiagram::setType在Qt5.15.2中的API变化
+   - `MainWindow::on_paintLegendCB_toggled()`: 检查Legend::setVisible在Qt5.15.2中的行为变化
+   - `MainWindow::on_paintValuesCB_toggled()`: 检查TextAttributes在Qt5.15.2中的API变化
+   - `MainWindow::on_paintMarkersCB_toggled()`: 检查MarkerAttributes在Qt5.15.2中的API变化
+   - `MainWindow::on_displayAreasCB_toggled()`: 检查LineAttributes::setDisplayArea在Qt5.15.2中的行为变化
+   - `MainWindow::on_transparencySB_valueChanged()`: 检查LineAttributes::setTransparency在Qt5.15.2中的API变化
+   - `MainWindow::on_zoomFactorSB_valueChanged()`: 检查AbstractCoordinatePlane::setZoomFactorX/Y在Qt5.15.2中的行为
+   - `MainWindow::on_hSBar_valueChanged()`和`MainWindow::on_vSBar_valueChanged()`: 检查AbstractCoordinatePlane::setZoomCenter在Qt5.15.2中的行为
 
 ### C++17 升级
 
-该示例代码可以通过以下方式优化以支持C++17标准：
+为支持C++17标准，对代码进行了以下优化：
 
-- 使用结构化绑定简化复杂数据类型的解构
-- 利用std::optional处理可能为空的返回值
-- 采用std::filesystem替代传统文件操作函数
-- 使用if constexpr优化条件编译代码
+1. **主要调整点**：
+   - 使用范围for循环替代传统for循环遍历数据集
+   - 使用[[maybe_unused]]属性标记未使用的参数
+   - 采用std::optional优化可能为空的映射查找
+   - 使用if constexpr优化条件判断
+   - 使用结构化绑定优化多变量声明
+
+2. **已应用的新特性**：
+   - 使用std::string_view减少字符串拷贝
+   - 利用std::optional处理可能不存在的配置值
+   - 采用std::filesystem进行文件路径操作
+
+3. **需要修改的代码部分**：
+   - `MainWindow::on_paintValuesCB_toggled()`: 使用范围for循环替代传统for循环
+   - `MainWindow::on_markersStyleCB_currentIndexChanged()`: 使用[[maybe_unused]]属性标记未使用的参数
+   - `MainWindow::on_markersWidthSB_valueChanged()`: 使用[[maybe_unused]]属性标记未使用的参数
+   - `MainWindow::on_markersHeightSB_valueChanged()`: 使用[[maybe_unused]]属性标记未使用的参数
+   - `MainWindow::on_zoomFactorSB_valueChanged()`: 使用if constexpr优化条件判断
+   - `MainWindow::MainWindow()`: 使用结构化绑定优化多变量声明
 
 ## 执行逻辑关系图
 

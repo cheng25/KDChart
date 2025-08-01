@@ -2,6 +2,7 @@
 **
 ** This file is part of the KD Chart library.
 ** 此文件是KD Chart库的示例文件，展示Levey-Jennings图表的实现。
+** Levey-Jennings图表是一种特殊类型的控制图，广泛应用于临床实验室质量控制。
 **
 ** SPDX-FileCopyrightText: 2001 Klarälvdalens Datakonsult AB, a KDAB Group company <info@kdab.com>
 ** 版权所有 (C) 2001 Klarälvdalens Datakonsult AB，KDAB集团公司 <info@kdab.com>
@@ -10,18 +11,32 @@
 ** 许可证: MIT
 **
 ****************************************************************************/
+// TODO: Qt5.15.2升级 检查头文件包含是否需要调整
 
+// Qt应用程序框架头文件
 #include <QApplication>
+// KD Chart核心图表类
 #include <KDChartChart>
+// Levey-Jennings图表专用坐标轴
 #include <KDChartLeveyJenningsAxis>
+// Levey-Jennings图表专用坐标平面
 #include <KDChartLeveyJenningsCoordinatePlane>
+// Levey-Jennings图表类
 #include <KDChartLeveyJenningsDiagram>
+// Levey-Jennings图表网格属性
 #include <KDChartLeveyJenningsGridAttributes>
+// 日期时间处理
 #include <QDateTime>
+// 分割器布局
 #include <QSplitter>
+// 标准数据模型
 #include <QStandardItemModel>
+// 表格视图
 #include <QTableView>
+// 定时器
 #include <QTimer>
+// TODO: Qt5.15.2升级 检查KDChart API是否有变更
+// TODO: Qt5.15.2升级 验证所有包含的头文件在新版本中的兼容性
 
 /**
  * @brief 选择动画器类
@@ -38,7 +53,7 @@ public:
      * @details 创建选择动画器实例，初始化定时器并设置1秒间隔触发动画
      */
     SelectionAnimator(QAbstractItemView *view)
-        : QObject(view)
+        : QObject(view) // 调用父类构造函数并设置父对象
         , view(view) // 初始化表格视图指针
     {
         // 创建定时器对象并设置父对象为当前动画器
@@ -52,18 +67,24 @@ protected Q_SLOTS:
     /**
      * @brief 动画槽函数
      * @details 实现表格行的循环选中效果，每次选中下一行数据，到达末尾后回到起始行
+     *          通过selectionModel实现表格与图表的数据联动
      */
     void animate()
     {
+        // 获取当前选中行索引
+        int currentRow = view->selectionModel()->currentIndex().row();
         // 计算下一行索引，使用模运算实现循环
-        const int row = (view->selectionModel()->currentIndex().row() + 1) % view->model()->rowCount();
+        const int row = (currentRow + 1) % view->model()->rowCount();
+        // 获取下一行的模型索引
+        QModelIndex newIndex = view->model()->index(row, 0);
         // 设置当前选中项，清除原有选择并选择新行
-        view->selectionModel()->setCurrentIndex(view->model()->index(row, 0), QItemSelectionModel::ClearAndSelect);
+        view->selectionModel()->setCurrentIndex(newIndex, QItemSelectionModel::ClearAndSelect);
     }
 
 private:
     QAbstractItemView *const view; // 关联的表格视图对象指针，用于操作选中状态
 }; // TODO: C++17升级 考虑使用final修饰符
+// TODO: Qt5.15.2升级 检查QAbstractItemView和QTimer在新版本中的API变化
 
 #include "main.moc"
 

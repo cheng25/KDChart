@@ -73,16 +73,27 @@ graph LR
   - 检查QWidget::setLayout在高DPI环境下的布局行为
   - 验证KDChart::CartesianAxis坐标系计算逻辑变更
   - 确认QApplication构造函数参数要求变更
+  - 检查KDChart::CartesianAxis::customizedLabel在Qt5.15.2中的行为变更
+  - 验证QString::toDouble在不同语言环境下的解析行为
 - **TODO项**: 
   - `// TODO: Qt5.15.2升级 检查QWidget::setLayout在Qt5.15.2中的高DPI布局行为`
   - `// TODO: Qt5.15.2升级 检查KDChart::CartesianAxis在Qt5.15.2中的坐标系计算逻辑变更`
   - `// TODO: Qt5.15.2升级 验证QApplication构造函数在Qt5.15.2中的参数要求变更`
+  - `// TODO: Qt5.15.2升级 检查KDChart::CartesianAxis::customizedLabel在Qt5.15.2中的行为变更`
+  - `// TODO: Qt5.15.2升级 验证QString::toDouble在不同语言环境下的解析行为`
 
 ## C++17升级说明
 - **主要调整**: 
   - 使用constexpr优化成员变量初始化
   - 考虑使用std::unique_ptr管理动态对象
   - 应用[[maybe_unused]]标记未使用参数
+  - 使用std::string_view优化字符串处理
+  - 考虑使用std::optional返回可能为空的结果
+  - 使用if constexpr优化条件判断
 - **TODO项**: 
   - `// TODO: C++17升级 使用std::string_view优化字符串处理`
   - `// TODO: C++17升级 使用[[maybe_unused]]标记未使用的命令行参数`
+  - `// TODO: C++17升级 考虑使用if constexpr优化条件判断`
+  - `// TODO: C++17升级 可使用std::optional返回可能为空的标签结果`
+  - `// TODO: C++17升级 使用constexpr优化常量表达式计算`
+  - `// TODO: C++17升级 考虑使用结构化绑定优化多变量声明`
