@@ -1,18 +1,54 @@
 # API 参考
 
-- 分钟等级: 高级
+- 11分钟	等级: 高级
 
 本文档提供了 KDChart 库 API 的全面参考,帮助开发者了解可用的类、方法和它们的用法模式。KDChart 是一个功能强大且灵活的基于 Qt 的图表库,支持各种图表类型和广泛的定制选项。
 
+
+
 KDChart 遵循一个结构良好的面向对象设计模式,其中图表的创建和操作是通过具有特定职责的类的层次结构来完成的。下图显示了库的整体架构:
 
-来源:KDChartWidget.h,KDChartChart.h
+```mermaid
+graph TD
+    Widget["KDChart::Widget (简单 API)"]
+    Chart["KDChart::Chart (模型/视图 API)"]
+    AbstractDiagram["AbstractDiagram"]
+    CartesianDiagram["AbstractCartesianDiagram"]
+    PolarDiagram["AbstractPolarDiagram"]
+    TernaryDiagram["AbstractTernaryDiagram"]
+    
+    Widget --> Chart
+    Chart --> AbstractDiagram
+    AbstractDiagram --> CartesianDiagram
+    AbstractDiagram --> PolarDiagram
+    AbstractDiagram --> TernaryDiagram
+    
+    CartesianDiagram --> BarDiagram["BarDiagram"]
+    CartesianDiagram --> LineDiagram["LineDiagram"]
+    CartesianDiagram --> Plotter["Plotter"]
+    CartesianDiagram --> StockDiagram["StockDiagram"]
+    CartesianDiagram --> LeveyJennings["LeveyJenningsDiagram"]
+    
+    PolarDiagram --> PieD["PieDiagram"]
+    PolarDiagram --> RingD["RingDiagram"]
+    PolarDiagram --> PolarD["PolarDiagram"]
+    PolarDiagram --> RadarD["RadarDiagram"]
+    
+    TernaryDiagram --> TernaryLineD["TernaryLineDiagram"]
+    TernaryDiagram --> TernaryPointD["TernaryPointDiagram"]
+    
+    Gantt["KDGantt::View"]
+```
+
+
+
+来源：[KDChartWidget.h](https://zread.ai/cheng25/KDChart/src/KDChart/KDChartWidget.h)，[KDChartChart.h](https://zread.ai/cheng25/KDChart/src/KDChart/KDChartChart.h)
 
 ## 核心组件
 
 ### KDChart::Widget
 
-KDChart::Widget 类提供了一种最简单的方法来创建图表,而无需使用模型/视图架构。这是初学者的推荐入门点。
+`KDChart::Widget` 类提供了一种最简单的方法来创建图表,而无需使用模型/视图架构。这是初学者的推荐入门点。
 
 #### 关键方法:
 
@@ -28,10 +64,11 @@ KDChart::Widget 类提供了一种最简单的方法来创建图表,而无需使
 
 #### 图表类型和子类型:
 
-CPP
 
-```
-enum ChartType { NoType, Bar, Line, Plot, Pie, Ring, Polar }; enum SubType { Normal, Stacked, Percent, Rows };
+
+```cpp
+enum ChartType { NoType, Bar, Line, Plot, Pie, Ring, Polar };
+enum SubType { Normal, Stacked, Percent, Rows };
 ```
 
 #### 访问特定图表类型:
@@ -45,11 +82,11 @@ enum ChartType { NoType, Bar, Line, Plot, Pie, Ring, Polar }; enum SubType { Nor
 | ringDiagram() | 如果适用,则返回图表作为 RingDiagram |
 | polarDiagram() | 如果适用,则返回图表作为 PolarDiagram |
 
-来源:KDChartWidget.h
+来源：[KDChartWidget.h](https://zread.ai/cheng25/KDChart/src/KDChart/KDChartWidget.h)
 
 ### KDChart::Chart
 
-KDChart::Chart 类是模型/视图兼容的图表小部件。它比 KDChart::Widget 更灵活,但需要更多的设置代码。
+`KDChart::Chart` 类是模型/视图兼容的图表小部件。它比 `KDChart::Widget` 更灵活,但需要更多的设置代码。
 
 #### 关键方法:
 
@@ -60,13 +97,13 @@ KDChart::Chart 类是模型/视图兼容的图表小部件。它比 KDChart::Wid
 | takeCoordinatePlane(AbstractCoordinatePlane\* plane) | 移除坐标平面,但不删除它 |
 | replaceCoordinatePlane(AbstractCoordinatePlane\* plane, AbstractCoordinatePlane\* oldPlane = nullptr) | 替换坐标平面 |
 
-来源:KDChartChart.h
+来源：[KDChartChart.h](https://zread.ai/cheng25/KDChart/src/KDChart/KDChartChart.h)
 
 ## 图表类
 
 ### AbstractDiagram
 
-AbstractDiagram 类是所有图表类型的基类。它为所有图表提供公共功能。
+`AbstractDiagram` 类是所有图表类型的基类。它为所有图表提供公共功能。
 
 #### 关键方法:
 
@@ -79,7 +116,7 @@ AbstractDiagram 类是所有图表类型的基类。它为所有图表提供公�
 | setPen(const QPen& pen) | 设置用于绘制的笔 |
 | setBrush(const QBrush& brush) | 设置用于填充的画笔 |
 
-来源:KDChartAbstractDiagram.h
+来源：[KDChartAbstractDiagram.h](https://zread.ai/cheng25/KDChart/src/KDChart/KDChartAbstractDiagram.h)
 
 ### 笛卡尔图表
 
@@ -91,33 +128,43 @@ AbstractDiagram 类是所有图表类型的基类。它为所有图表提供公�
 
 将数据表示为垂直或水平条。
 
-CPP
-
-```
-// 创建一个简单的条形图 KDChart::Widget widget; widget.setType(KDChart::Widget::Bar); QVector<qreal> data = {1.2, 2.4, 3.6, 4.8, 6.0}; widget.setDataset(0, data, "示例数据");
+```cpp
+// 创建一个简单的条形图
+KDChart::Widget widget;
+widget.setType(KDChart::Widget::Bar);
+QVector<qreal> data = {1.2, 2.4, 3.6, 4.8, 6.0};
+widget.setDataset(0, data, "示例数据");
 ```
 
 #### LineDiagram
 
 将数据表示为连接点的线。
 
-CPP
-
-```
-// 创建一个折线图 KDChart::Widget widget; widget.setType(KDChart::Widget::Line); QVector<qreal> data = {1.2, 2.4, 3.6, 4.8, 6.0}; widget.setDataset(0, data, "示例数据");
+```cpp
+// 创建一个折线图
+KDChart::Widget widget;
+widget.setType(KDChart::Widget::Line);
+QVector<qreal> data = {1.2, 2.4, 3.6, 4.8, 6.0};
+widget.setDataset(0, data, "示例数据");
 ```
 
 #### Plotter
 
 具有额外功能的更高级的折线图,用于散点图。
 
-CPP
 
-```
-// 创建一个散点图 KDChart::Widget widget; widget.setType(KDChart::Widget::Plot); // 使用 X-Y 对 QVector<QPair<qreal, qreal>> data; data << qMakePair(1.0, 2.5) << qMakePair(2.0, 3.5) << qMakePair(3.0, 4.5); widget.setDataset(0, data, "示例数据");
+
+```cpp
+// 创建一个散点图
+KDChart::Widget widget;
+widget.setType(KDChart::Widget::Plot);
+// 使用 X-Y 对
+QVector<QPair<qreal, qreal>> data;
+data << qMakePair(1.0, 2.5) << qMakePair(2.0, 3.5) << qMakePair(3.0, 4.5);
+widget.setDataset(0, data, "示例数据");
 ```
 
-来源:KDChartAbstractCartesianDiagram.h,KDChartBarDiagram.h,KDChartLineDiagram.h,KDChartPlotter.h
+来源：[KDChartAbstractCartesianDiagram.h](https://zread.ai/cheng25/KDChart/src/KDChart/Cartesian/KDChartAbstractCartesianDiagram.h)，[KDChartBarDiagram.h](https://zread.ai/cheng25/KDChart/src/KDChart/Cartesian/KDChartBarDiagram.h)，[KDChartLineDiagram.h](https://zread.ai/cheng25/KDChart/src/KDChart/Cartesian/KDChartLineDiagram.h)，[KDChartPlotter.h](https://zread.ai/cheng25/KDChart/src/KDChart/Cartesian/KDChartPlotter.h)
 
 ### 极坐标图表
 
@@ -129,33 +176,45 @@ CPP
 
 将数据表示为饼图的切片。
 
-CPP
 
-```
-// 创建一个饼图 KDChart::Widget widget; widget.setType(KDChart::Widget::Pie); QVector<qreal> data = {15.0, 25.0, 35.0, 25.0}; widget.setDataset(0, data, "示例数据");
+
+```cpp
+// 创建一个饼图
+KDChart::Widget widget;
+widget.setType(KDChart::Widget::Pie);
+QVector<qreal> data = {15.0, 25.0, 35.0, 25.0};
+widget.setDataset(0, data, "示例数据");
 ```
 
 #### RingDiagram
 
 将数据表示为带扇区的同心圆环。
 
-CPP
 
-```
-// 创建一个环形图 KDChart::Widget widget; widget.setType(KDChart::Widget::Ring); QVector<qreal> data = {15.0, 25.0, 35.0, 25.0}; widget.setDataset(0, data, "示例数据");
+
+```cpp
+// 创建一个环形图
+KDChart::Widget widget;
+widget.setType(KDChart::Widget::Ring);
+QVector<qreal> data = {15.0, 25.0, 35.0, 25.0};
+widget.setDataset(0, data, "示例数据");
 ```
 
 #### PolarDiagram
 
 在极坐标系统中表示数据。
 
-CPP
 
-```
-// 创建一个极坐标图 KDChart::Widget widget; widget.setType(KDChart::Widget::Polar); QVector<qreal> data = {1.2, 2.4, 3.6, 4.8, 6.0, 4.8, 3.6, 2.4}; widget.setDataset(0, data, "示例数据");
+
+```cpp
+// 创建一个极坐标图
+KDChart::Widget widget;
+widget.setType(KDChart::Widget::Polar);
+QVector<qreal> data = {1.2, 2.4, 3.6, 4.8, 6.0, 4.8, 3.6, 2.4};
+widget.setDataset(0, data, "示例数据");
 ```
 
-来源:KDChartAbstractPolarDiagram.h,KDChartPieDiagram.h,KDChartRingDiagram.h,KDChartPolarDiagram.h
+来源：[KDChartAbstractPolarDiagram.h](https://zread.ai/cheng25/KDChart/src/KDChart/Polar/KDChartAbstractPolarDiagram.h)，[KDChartPieDiagram.h](https://zread.ai/cheng25/KDChart/src/KDChart/Polar/KDChartPieDiagram.h)，[KDChartRingDiagram.h](https://zread.ai/cheng25/KDChart/src/KDChart/Polar/KDChartRingDiagram.h)，[KDChartPolarDiagram.h](https://zread.ai/cheng25/KDChart/src/KDChart/Polar/KDChartPolarDiagram.h)
 
 ### 三元图表
 
@@ -171,13 +230,18 @@ CPP
 
 将三元数据表示为点。
 
-CPP
-
+```cpp
+// 使用三元图表需要使用模型/视图方法进行更多设置
+KDChart::Chart chart;
+KDChart::TernaryCoordinatePlane* plane = new KDChart::TernaryCoordinatePlane(&chart);
+chart.addCoordinatePlane(plane);
+ 
+KDChart::TernaryPointDiagram* diagram = new KDChart::TernaryPointDiagram();
+diagram->setModel(model); // 需要使用适当的数据设置模型
+plane->addDiagram(diagram);
 ```
-// 使用三元图表需要使用模型/视图方法进行更多设置 KDChart::Chart chart; KDChart::TernaryCoordinatePlane* plane = new KDChart::TernaryCoordinatePlane(&chart); chart.addCoordinatePlane(plane); KDChart::TernaryPointDiagram* diagram = new KDChart::TernaryPointDiagram(); diagram->setModel(model); // 需要使用适当的数据设置模型 plane->addDiagram(diagram);
-```
 
-来源:KDChartAbstractTernaryDiagram.h,KDChartTernaryLineDiagram.h,KDChartTernaryPointDiagram.h
+来源：[KDChartAbstractTernaryDiagram.h](https://zread.ai/cheng25/KDChart/src/KDChart/Ternary/KDChartAbstractTernaryDiagram.h)，[KDChartTernaryLineDiagram.h](https://zread.ai/cheng25/KDChart/src/KDChart/Ternary/KDChartTernaryLineDiagram.h)，[KDChartTernaryPointDiagram.h](https://zread.ai/cheng25/KDChart/src/KDChart/Ternary/KDChartTernaryPointDiagram.h)
 
 ### 特殊图表
 
@@ -189,13 +253,18 @@ CPP
 
 表示股票市场数据(开盘价、最高价、最低价、收盘价)。
 
-CPP
-
+```cpp
+// 创建一个股票图表
+KDChart::Chart chart;
+KDChart::CartesianCoordinatePlane* plane = new KDChart::CartesianCoordinatePlane(&chart);
+chart.addCoordinatePlane(plane);
+ 
+KDChart::StockDiagram* diagram = new KDChart::StockDiagram();
+diagram->setModel(model); // 包含 OHLC 数据的模型
+plane->addDiagram(diagram);
 ```
-// 创建一个股票图表 KDChart::Chart chart; KDChart::CartesianCoordinatePlane* plane = new KDChart::CartesianCoordinatePlane(&chart); chart.addCoordinatePlane(plane); KDChart::StockDiagram* diagram = new KDChart::StockDiagram(); diagram->setModel(model); // 包含 OHLC 数据的模型 plane->addDiagram(diagram);
-```
 
-来源:KDChartLeveyJenningsDiagram.h,KDChartStockDiagram.h
+来源：[KDChartLeveyJenningsDiagram.h](https://zread.ai/cheng25/KDChart/src/KDChart/Cartesian/KDChartLeveyJenningsDiagram.h)，[KDChartStockDiagram.h](https://zread.ai/cheng25/KDChart/src/KDChart/Cartesian/KDChartStockDiagram.h)
 
 ## 坐标平面
 
@@ -207,10 +276,15 @@ CPP
 
 提供笛卡尔坐标系。
 
-CPP
-
-```
-// 创建笛卡尔坐标平面并添加自定义设置 KDChart::Chart chart; KDChart::CartesianCoordinatePlane* plane = new KDChart::CartesianCoordinatePlane(&chart); chart.addCoordinatePlane(plane); // 配置网格 KDChart::CartesianGrid* grid = dynamic_cast<KDChart::CartesianGrid*>(plane->grid()); grid->setGranularitySequence(QList<qreal>() << 1.0 << 2.0 << 5.0);
+```cpp
+// 使用坐标平面的自定义设置
+KDChart::Chart chart;
+KDChart::CartesianCoordinatePlane* plane = new KDChart::CartesianCoordinatePlane(&chart);
+chart.addCoordinatePlane(plane);
+ 
+// 配置网格
+KDChart::CartesianGrid* grid = dynamic_cast<KDChart::CartesianGrid*>(plane->grid());
+grid->setGranularitySequence(QList<qreal>() << 1.0 << 2.0 << 5.0);
 ```
 
 ### PolarCoordinatePlane
@@ -225,7 +299,7 @@ CPP
 
 提供三元坐标系。
 
-来源:KDChartAbstractCoordinatePlane.h,KDChartCartesianCoordinatePlane.h,KDChartPolarCoordinatePlane.h,KDChartRadarCoordinatePlane.h,KDChartTernaryCoordinatePlane.h
+来源：[KDChartAbstractCoordinatePlane.h](https://zread.ai/cheng25/KDChart/src/KDChart/KDChartAbstractCoordinatePlane.h)，[KDChartCartesianCoordinatePlane.h](https://zread.ai/cheng25/KDChart/src/KDChart/Cartesian/KDChartCartesianCoordinatePlane.h)，[KDChartPolarCoordinatePlane.h](https://zread.ai/cheng25/KDChart/src/KDChart/Polar/KDChartPolarCoordinatePlane.h)，[KDChartRadarCoordinatePlane.h](https://zread.ai/cheng25/KDChart/src/KDChart/Polar/KDChartRadarCoordinatePlane.h)，[KDChartTernaryCoordinatePlane.h](https://zread.ai/cheng25/KDChart/src/KDChart/Ternary/KDChartTernaryCoordinatePlane.h)
 
 ## 轴和网格
 
@@ -237,10 +311,17 @@ CPP
 
 表示笛卡尔坐标系中的轴。
 
-CPP
-
-```
-// 配置轴 KDChart::CartesianAxis* xAxis = new KDChart::CartesianAxis(diagram); xAxis->setPosition(KDChart::CartesianAxis::Bottom); xAxis->setTitleText("X 轴"); diagram->addAxis(xAxis); KDChart::CartesianAxis* yAxis = new KDChart::CartesianAxis(diagram); yAxis->setPosition(KDChart::CartesianAxis::Left); yAxis->setTitleText("Y 轴"); diagram->addAxis(yAxis);
+```cpp
+// 配置轴
+KDChart::CartesianAxis* xAxis = new KDChart::CartesianAxis(diagram);
+xAxis->setPosition(KDChart::CartesianAxis::Bottom);
+xAxis->setTitleText("X 轴");
+diagram->addAxis(xAxis);
+ 
+KDChart::CartesianAxis* yAxis = new KDChart::CartesianAxis(diagram);
+yAxis->setPosition(KDChart::CartesianAxis::Left);
+yAxis->setTitleText("Y 轴");
+diagram->addAxis(yAxis);
 ```
 
 ### AbstractGrid
@@ -255,7 +336,7 @@ CPP
 
 表示极坐标系中的网格。
 
-来源:KDChartAbstractAxis.h,KDChartCartesianAxis.h,KDChartAbstractGrid.h,KDChartCartesianGrid.h,KDChartPolarGrid.h
+来源：[KDChartAbstractAxis.h](https://zread.ai/cheng25/KDChart/src/KDChart/KDChartAbstractAxis.h)，[KDChartCartesianAxis.h](https://zread.ai/cheng25/KDChart/src/KDChart/Cartesian/KDChartCartesianAxis.h)，[KDChartAbstractGrid.h](https://zread.ai/cheng25/KDChart/src/KDChart/KDChartAbstractGrid.h)，[KDChartCartesianGrid.h](https://zread.ai/cheng25/KDChart/src/KDChart/Cartesian/KDChartCartesianGrid.h)，[KDChartPolarGrid.h](https://zread.ai/cheng25/KDChart/src/KDChart/Polar/KDChartPolarGrid.h)
 
 ## 样式和外观
 
@@ -276,13 +357,26 @@ KDChart 提供了各种属性类来定制图表元素的外观:
 | ThreeDLineAttributes | 控制 3D 线的外观 |
 | ThreeDPieAttributes | 控制 3D 饼图切片的外观 |
 
-CPP
-
+```cpp
+// 样式化条形图
+KDChart::BarDiagram* barDiagram = widget.barDiagram();
+if (barDiagram) {
+    // 设置条形属性
+    KDChart::BarAttributes ba = barDiagram->barAttributes();
+    ba.setGapBetweenBars(0.2);//设置条形之间的间距
+    ba.setGapBetweenGroups(0.5);//设置组间间隔
+    barDiagram->setBarAttributes(ba);
+    
+    // 使其 3D
+    KDChart::ThreeDBarAttributes tda = barDiagram->threeDBarAttributes();
+    tda.setEnabled(true);
+    tda.setDepth(10);
+    tda.setAngle(15);
+    barDiagram->setThreeDBarAttributes(tda);
+}
 ```
-// 样式化条形图 KDChart::BarDiagram* barDiagram = widget.barDiagram(); if (barDiagram) { // 设置条形属性 KDChart::BarAttributes ba = barDiagram->barAttributes(); ba.setGapBetweenBars(0.2); ba.setGapBetweenGroups(0.5); barDiagram->setBarAttributes(ba); // 使其 3D KDChart::ThreeDBarAttributes tda = barDiagram->threeDBarAttributes(); tda.setEnabled(true); tda.setDepth(10); tda.setAngle(15); barDiagram->setThreeDBarAttributes(tda); }
-```
 
-来源:KDChartBackgroundAttributes.h,KDChartBarAttributes.h,KDChartThreeDBarAttributes.h
+来源：[KDChartBackgroundAttributes.h](https://zread.ai/cheng25/KDChart/src/KDChart/KDChartBackgroundAttributes.h)，[KDChartBarAttributes.h](https://zread.ai/cheng25/KDChart/src/KDChart/Cartesian/KDChartBarAttributes.h)，[KDChartThreeDBarAttributes.h](https://zread.ai/cheng25/KDChart/src/KDChart/Cartesian/KDChartThreeDBarAttributes.h)
 
 ## 标题、页脚和图例
 
@@ -290,23 +384,27 @@ CPP
 
 表示图表中的标题或页脚。
 
-CPP
-
-```
-// 添加标题和页脚 widget.addHeaderFooter("我的图表标题", KDChart::HeaderFooter::Header, KDChart::Position::North); widget.addHeaderFooter("数据来源:示例公司", KDChart::HeaderFooter::Footer, KDChart::Position::South);
+```cpp
+// 添加标题和页脚
+widget.addHeaderFooter("我的图表标题", 
+                       KDChart::HeaderFooter::Header, 
+                       KDChart::Position::North);
+                       
+widget.addHeaderFooter("数据来源：示例公司", 
+                       KDChart::HeaderFooter::Footer, 
+                       KDChart::Position::South);
 ```
 
 ### Legend
 
 表示图表中的图例。
 
-CPP
-
+```cpp
+// 添加图例
+widget.addLegend(KDChart::Position::East);
 ```
-// 添加图例 widget.addLegend(KDChart::Position::East);
-```
 
-来源:KDChartHeaderFooter.h,KDChartLegend.h
+来源：[KDChartHeaderFooter.h](https://zread.ai/cheng25/KDChart/src/KDChart/KDChartHeaderFooter.h)，[KDChartLegend.h](https://zread.ai/cheng25/KDChart/src/KDChart/KDChartLegend.h)
 
 ## 数据处理
 
@@ -314,17 +412,28 @@ CPP
 
 存储各个数据点的属性。
 
-CPP
 
-```
-// 特定数据点的自定义属性 KDChart::BarDiagram* barDiagram = widget.barDiagram(); if (barDiagram) { // 突出显示第二个条 QModelIndex index = barDiagram->model()->index(1, 0); KDChart::DataValueAttributes dva = barDiagram->dataValueAttributes(index); KDChart::TextAttributes ta = dva.textAttributes(); ta.setVisible(true); dva.setTextAttributes(ta); dva.setVisible(true); barDiagram->setDataValueAttributes(index, dva); }
+
+```cpp
+// 特定数据点的自定义属性
+KDChart::BarDiagram* barDiagram = widget.barDiagram();
+if (barDiagram) {
+    // 突出显示第二个条
+    QModelIndex index = barDiagram->model()->index(1, 0);
+    KDChart::DataValueAttributes dva = barDiagram->dataValueAttributes(index);
+    KDChart::TextAttributes ta = dva.textAttributes();
+    ta.setVisible(true);
+    dva.setTextAttributes(ta);
+    dva.setVisible(true);
+    barDiagram->setDataValueAttributes(index, dva);
+}
 ```
 
 ### DatasetProxyModel
 
 允许从模型中选择特定的数据集。
 
-来源:KDChartAttributesModel.h,KDChartDatasetProxyModel.h
+来源：[KDChartAttributesModel.h](https://zread.ai/cheng25/KDChart/src/KDChart/KDChartAttributesModel.h)，[KDChartDatasetProxyModel.h](https://zread.ai/cheng25/KDChart/src/KDChart/KDChartDatasetProxyModel.h)
 
 ## KDGantt 模块
 
@@ -334,10 +443,15 @@ KDGantt 模块提供用于创建甘特图的类。
 
 用于显示甘特图的主类。
 
-CPP
 
-```
-// 基本甘特图设置 KDGantt::View view; QStandardItemModel model; // 使用适当的列设置模型 // ... view.setModel(&model);
+
+```cpp
+// 基本甘特图设置
+KDGantt::View view;
+QStandardItemModel model;
+// 使用适当的列设置模型
+// ...
+view.setModel(&model);
 ```
 
 ### KDGantt::GraphicsView
@@ -352,22 +466,31 @@ KDGantt::View 使用的图形视图。
 
 甘特图的时间基础网格。
 
-来源:kdganttview.h,kdganttgraphicsview.h,kdganttabstractgrid.h,kdganttdatetimegrid.h
+来源：[kdganttview.h](https://zread.ai/cheng25/KDChart/src/KDGantt/kdganttview.h)，[kdganttgraphicsview.h](https://zread.ai/cheng25/KDChart/src/KDGantt/kdganttgraphicsview.h)，[kdganttabstractgrid.h](https://zread.ai/cheng25/KDChart/src/KDGantt/kdganttabstractgrid.h)，[kdganttdatetimegrid.h](https://zread.ai/cheng25/KDChart/src/KDGantt/kdganttdatetimegrid.h)
 
 ## Python 绑定
 
 KDChart 通过 PyKDChart 模块提供 Python 绑定。
 
-PYTHON
 
-```
-# Python 示例 from PyKDChart import KDChart widget = KDChart.Widget() widget.setType(KDChart.Widget.Bar) # 设置数据和自定义类似于 C++ 方法
+
+```python
+# Python 示例
+from PyKDChart import KDChart
+ 
+widget = KDChart.Widget()
+widget.setType(KDChart.Widget.Bar)
+# 设置数据和自定义类似于 C++ 方法
 ```
 
-来源:PyKDChart
+来源：[PyKDChart](https://zread.ai/cheng25/KDChart/python/PyKDChart/)
 
 ## WebAssembly 支持
 
 KDChart 可以编译为 WebAssembly,允许它在网页浏览器中使用。
 
 此 API 参考提供了 KDChart 主要组件的概述。有关特定类和方法的更多详细信息,请参阅源代码中的头文件或库附带的全面文档。
+
+[<WebAssembly支持.md](WebAssembly支持.md)
+
+[<WebAssembly 支持](https://zread.ai/cheng25/KDChart/17-webassembly-support)

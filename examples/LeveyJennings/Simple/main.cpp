@@ -38,6 +38,9 @@
 // TODO: Qt5.15.2升级 检查KDChart API是否有变更
 // TODO: Qt5.15.2升级 验证所有包含的头文件在新版本中的兼容性
 
+#if defined(Q_CC_MSVC)
+#pragma execution_character_set("utf-8") // 设置源代码文件的字符编码为UTF-8，确保中文注释正确显示
+#endif // MSVC编译器特定设置
 /**
  * @brief 选择动画器类
  * @details 继承自QObject，用于在表格视图中自动切换选中项，实现数据高亮动画效果
